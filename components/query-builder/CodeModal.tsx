@@ -8,6 +8,7 @@ import { json } from '@codemirror/lang-json';
 import { javascript } from '@codemirror/lang-javascript';
 import { java } from '@codemirror/lang-java';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
+import { blulocoLight } from '@/components/code-themes/blulocoLight';
 
 interface CodeModalProps {
     isOpen: boolean;
@@ -15,10 +16,14 @@ interface CodeModalProps {
     code: string | { url: string, sapui5: string, csharp: string, java: string };
     action: 'delete' | 'update' | 'create';
     onExecute: () => void;
+    isDark?: boolean; // 新增：接收主题模式
 }
 
-export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code, action, onExecute }) => {
+export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code, action, onExecute, isDark = true }) => {
     const [selectedTab, setSelectedTab] = useState<string>('url');
+    
+    // 动态切换编辑器主题
+    const editorTheme = isDark ? vscodeDark : blulocoLight;
 
     useEffect(() => {
         if (isOpen) {
@@ -62,34 +67,35 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code
             size="4xl" 
             scrollBehavior="inside"
             isDismissable={false}
+            backdrop="blur"
         >
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader className="flex gap-2 items-center border-b border-divider">
+                        <ModalHeader className="flex gap-2 items-center border-b border-divider bg-content1">
                             <FileCode className="text-primary" />
                             {action === 'delete' ? '确认删除 (Confirm Delete)' : 
                              action === 'update' ? '确认更新 (Confirm Update)' : 
                              action === 'create' ? '确认创建 (Confirm Create)' :
                              `代码预览 (${action})`}
                         </ModalHeader>
-                        <ModalBody className="p-0 bg-[#1e1e1e] flex flex-col min-h-[400px]">
+                        <ModalBody className={`p-0 flex flex-col min-h-[400px] ${isDark ? 'bg-[#1e1e1e]' : 'bg-[#FAFAFA]'}`}>
                             {action === 'delete' && (
-                                <div className="p-4 pb-0 text-sm text-warning-500 font-bold bg-background shrink-0">
+                                <div className="p-4 pb-0 text-sm text-warning-500 font-bold shrink-0 bg-transparent">
                                     警告: 您即将执行 DELETE 操作。以下是生成的代码供参考。
                                     <br/>
                                     Warning: You are about to DELETE data. Review the code snippets below.
                                 </div>
                             )}
                             {action === 'update' && (
-                                <div className="p-4 pb-0 text-sm text-primary-500 font-bold bg-background shrink-0">
+                                <div className="p-4 pb-0 text-sm text-primary-500 font-bold shrink-0 bg-transparent">
                                     提示: 您即将执行 PATCH 操作更新数据。以下是生成的变更代码。
                                     <br/>
                                     Info: You are about to UPDATE data. Review the generated PATCH code below.
                                 </div>
                             )}
                             {action === 'create' && (
-                                <div className="p-4 pb-0 text-sm text-success-500 font-bold bg-background shrink-0">
+                                <div className="p-4 pb-0 text-sm text-success-500 font-bold shrink-0 bg-transparent">
                                     提示: 您即将执行 POST 操作创建新数据。
                                     <br/>
                                     Info: You are about to CREATE new data. Review the payload below.
@@ -103,14 +109,15 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code
                                         height="100%"
                                         className="h-full"
                                         extensions={extensions}
-                                        theme={vscodeDark}
+                                        theme={editorTheme}
                                         readOnly={true}
                                         editable={false}
                                     />
                                 </div>
                             ) : (
                                 <div className="flex flex-col h-[500px]">
-                                    <div className="bg-[#252526] border-b border-white/10 px-4 shrink-0 flex gap-6 select-none">
+                                    {/* Tabs Header */}
+                                    <div className={`border-b px-4 shrink-0 flex gap-6 select-none ${isDark ? 'bg-[#252526] border-white/10' : 'bg-default-100 border-default-200'}`}>
                                         {tabOptions.map((item) => (
                                             <button
                                                 key={item.key}
@@ -119,12 +126,16 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code
                                                 className={`
                                                     group flex items-center gap-2 h-10 text-sm border-b-2 transition-all outline-none cursor-pointer bg-transparent p-0 px-1
                                                     ${selectedTab === item.key 
-                                                        ? 'border-primary text-white font-medium' 
-                                                        : 'border-transparent text-gray-400 hover:text-gray-300'
+                                                        ? 'border-primary font-medium' 
+                                                        : 'border-transparent'
+                                                    }
+                                                    ${selectedTab === item.key
+                                                        ? (isDark ? 'text-white' : 'text-foreground')
+                                                        : (isDark ? 'text-gray-400 hover:text-gray-300' : 'text-default-500 hover:text-default-700')
                                                     }
                                                 `}
                                             >
-                                                <item.icon size={14} className={selectedTab === item.key ? "text-primary" : "group-hover:text-gray-300"} />
+                                                <item.icon size={14} className={selectedTab === item.key ? "text-primary" : "opacity-70 group-hover:opacity-100"} />
                                                 <span>{item.label}</span>
                                             </button>
                                         ))}
@@ -137,7 +148,7 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code
                                             height="100%"
                                             className="h-full absolute inset-0"
                                             extensions={extensions}
-                                            theme={vscodeDark}
+                                            theme={editorTheme}
                                             readOnly={true}
                                             editable={false}
                                         />
@@ -145,7 +156,7 @@ export const CodeModal: React.FC<CodeModalProps> = ({ isOpen, onOpenChange, code
                                 </div>
                             )}
                         </ModalBody>
-                        <ModalFooter className="border-t border-divider bg-background">
+                        <ModalFooter className="border-t border-divider bg-content1">
                             <div className="flex-1">
                                 {(action === 'delete' || action === 'update' || action === 'create') && (
                                      <span className="text-xs text-default-400">点击 "Copy" 复制当前标签页代码。点击 "Execute" 在此工具中运行操作。</span>

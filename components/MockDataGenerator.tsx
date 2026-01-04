@@ -352,6 +352,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
           code={codePreview}
           action={modalAction}
           onExecute={executeBatch}
+          isDark={isDark}
       />
     </div>
   );

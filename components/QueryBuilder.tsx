@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo, Key } from 'react';
 import { ODataVersion, ParsedSchema } from '@/utils/odata-helper';
 
@@ -173,6 +174,7 @@ const QueryBuilder: React.FC<Props> = ({ url, version, isDark, schema }) => {
           code={codePreview}
           action={modalAction}
           onExecute={executeBatch}
+          isDark={isDark}
       />
     </div>
   );

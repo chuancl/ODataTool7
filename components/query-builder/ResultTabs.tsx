@@ -10,6 +10,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { xml } from '@codemirror/lang-xml';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
+import { blulocoLight } from '@/components/code-themes/blulocoLight';
 import { RecursiveDataTable } from './table/RecursiveDataTable';
 import { ParsedSchema } from '@/utils/odata-helper';
 
@@ -46,8 +47,8 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
     enableJsonEdit = false,
     onJsonChange
 }) => {
-    // 强制使用 vscodeDark 主题以满足 One Dark Pro 风格需求，无论亮/暗模式
-    const editorTheme = vscodeDark;
+    // 动态切换主题：暗黑模式用 One Dark Pro (vscodeDark)，亮色模式用 Bluloco Light
+    const editorTheme = isDark ? vscodeDark : blulocoLight;
     
     // Manage active tab state locally
     const [activeTab, setActiveTab] = useState<string>('table');

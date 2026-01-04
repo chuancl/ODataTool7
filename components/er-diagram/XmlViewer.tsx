@@ -6,6 +6,7 @@ import xmlFormat from 'xml-formatter';
 import CodeMirror from '@uiw/react-codemirror';
 import { xml } from '@codemirror/lang-xml';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
+import { blulocoLight } from '@/components/code-themes/blulocoLight';
 
 interface XmlViewerProps {
     xmlContent?: string;
@@ -13,8 +14,8 @@ interface XmlViewerProps {
 }
 
 export const XmlViewer: React.FC<XmlViewerProps> = ({ xmlContent, isDark }) => {
-    // 强制使用 vscodeDark 主题以满足 One Dark Pro 风格需求，无论亮/暗模式
-    const editorTheme = vscodeDark;
+    // 动态切换主题：暗黑模式用 One Dark Pro，亮色模式用 Bluloco Light
+    const editorTheme = isDark ? vscodeDark : blulocoLight;
 
     const formattedXml = useMemo(() => {
         if (!xmlContent) return '';
