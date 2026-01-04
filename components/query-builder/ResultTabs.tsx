@@ -10,7 +10,6 @@ import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 import { xml } from '@codemirror/lang-xml';
 import { vscodeDark } from '@uiw/codemirror-theme-vscode';
-import { githubLight } from '@uiw/codemirror-theme-github';
 import { RecursiveDataTable } from './table/RecursiveDataTable';
 import { ParsedSchema } from '@/utils/odata-helper';
 
@@ -47,7 +46,9 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
     enableJsonEdit = false,
     onJsonChange
 }) => {
-    const editorTheme = isDark ? vscodeDark : githubLight;
+    // 使用默认主题 (undefined) 作为亮色模式，以确保关键字高亮正常显示
+    // githubLight 有时对比度过低或配置不当导致高亮不明显
+    const editorTheme = isDark ? vscodeDark : undefined;
     
     // Manage active tab state locally
     const [activeTab, setActiveTab] = useState<string>('table');
