@@ -13,8 +13,8 @@ interface XmlViewerProps {
 }
 
 export const XmlViewer: React.FC<XmlViewerProps> = ({ xmlContent, isDark }) => {
-    // 使用默认主题 (undefined) 作为亮色模式，以确保关键字高亮正常显示
-    const editorTheme = isDark ? vscodeDark : undefined;
+    // 强制使用 vscodeDark 主题以满足 One Dark Pro 风格需求，无论亮/暗模式
+    const editorTheme = vscodeDark;
 
     const formattedXml = useMemo(() => {
         if (!xmlContent) return '';

@@ -46,9 +46,8 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
     enableJsonEdit = false,
     onJsonChange
 }) => {
-    // 使用默认主题 (undefined) 作为亮色模式，以确保关键字高亮正常显示
-    // githubLight 有时对比度过低或配置不当导致高亮不明显
-    const editorTheme = isDark ? vscodeDark : undefined;
+    // 强制使用 vscodeDark 主题以满足 One Dark Pro 风格需求，无论亮/暗模式
+    const editorTheme = vscodeDark;
     
     // Manage active tab state locally
     const [activeTab, setActiveTab] = useState<string>('table');
