@@ -34,6 +34,7 @@ interface ParamsFormProps {
 
     currentSchema: EntityType | null;
     schema: ParsedSchema | null;
+    isDark?: boolean; // 新增
 }
 
 export const ParamsForm: React.FC<ParamsFormProps> = ({
@@ -46,7 +47,8 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
     skip, setSkip,
     count, setCount,
     currentSchema,
-    schema
+    schema,
+    isDark
 }) => {
     // State for Filter Builder Modal
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -102,8 +104,16 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
         return extraProps;
     }, [expand, currentSchema, schema]);
 
+    // One Dark Pro Theme Styles for Select
+    const selectClassNames = {
+        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#61afef] data-[focus=true]:border-[#61afef]' : ''}`, // Force One Dark Pro BG
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
+        value: `text-small font-bold ${isDark ? 'text-[#61afef]' : ''}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+    };
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl bg-content1 shadow-sm border border-divider shrink-0">
+        <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl shadow-sm border shrink-0 ${isDark ? 'bg-[#21252b] border-[#3e4451]' : 'bg-content1 border-divider'}`}>
             {/* Filter Modal Component */}
             <FilterBuilderModal 
                 isOpen={isFilterModalOpen}
@@ -123,17 +133,14 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     placeholder="选择实体"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onSelectionChange={onEntityChange}
-                    variant="flat"
+                    variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
                     color="primary"
                     // 移除 size="sm" 以使用默认高度 (通常也是 h-14 左右，与我们的 Toolbar 对齐)
                     // 或者显式设置高度 class
                     className="w-full"
-                    classNames={{
-                        trigger: "h-14 min-h-14", // Force height to match toolbar
-                        label: "text-[10px] font-medium opacity-70",
-                        value: "text-small font-bold"
-                    }}
+                    classNames={selectClassNames}
                     items={entitySets.map(e => ({ key: e, label: e }))}
+                    popoverProps={{ classNames: { content: selectClassNames.popoverContent } }}
                 >
                     {(item) => <SelectItem key={item.key} value={item.key}>{item.label}</SelectItem>}
                 </Select>
@@ -149,6 +156,7 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     top={top} setTop={setTop}
                     skip={skip} setSkip={setSkip}
                     count={count} setCount={setCount}
+                    isDark={isDark}
                 />
             </div>
 
@@ -162,6 +170,7 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     expandedProperties={expandedEntityProperties}
                     sortItems={sortItems}
                     setSortItems={setSortItems}
+                    isDark={isDark}
                 />
 
                 {/* 4. 字段选择 ($select) */}
@@ -170,6 +179,7 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     expandedProperties={expandedEntityProperties}
                     select={select}
                     setSelect={setSelect}
+                    isDark={isDark}
                 />
 
                 {/* 5. 展开关联 ($expand) */}
@@ -178,6 +188,7 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     schema={schema}
                     expand={expand}
                     setExpand={setExpand}
+                    isDark={isDark}
                 />
             </div>
         </div>

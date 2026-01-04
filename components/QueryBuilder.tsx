@@ -144,6 +144,7 @@ const QueryBuilder: React.FC<Props> = ({ url, version, isDark, schema }) => {
           count={count} setCount={setCount}
           currentSchema={currentSchema}
           schema={schema}
+          isDark={isDark}
       />
 
       <UrlBar 

@@ -17,13 +17,15 @@ interface SortFieldsProps {
     expandedProperties: any[];
     sortItems: SortItem[];
     setSortItems: (items: SortItem[]) => void;
+    isDark?: boolean; // 新增
 }
 
 export const SortFields: React.FC<SortFieldsProps> = ({
     currentSchema,
     expandedProperties,
     sortItems,
-    setSortItems
+    setSortItems,
+    isDark
 }) => {
     // --- Sort 字段逻辑 ---
     const sortOptions = useMemo(() => {
@@ -71,23 +73,24 @@ export const SortFields: React.FC<SortFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium opacity-70",
-        value: "text-small"
+        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#c678dd] data-[focus=true]:border-[#c678dd]' : ''}`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
+        value: `text-small ${isDark ? 'text-[#c678dd]' : ''}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
     };
 
     if (!currentSchema) {
         return (
             <>
-                <Input isDisabled label="升序" placeholder="需先选择实体" variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
-                <Input isDisabled label="降序" placeholder="需先选择实体" variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="升序" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="降序" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
             </>
         );
     }
 
     return (
         <>
-            {/* 排序 - 升序 (使用 Secondary 色调) */}
+            {/* 排序 - 升序 (Secondary) */}
             <Select
                 label="升序 (Ascending)"
                 placeholder="选择升序字段"
@@ -95,17 +98,18 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentAscKeys}
                 onSelectionChange={handleAscChange}
                 disabledKeys={Array.from(currentDescKeys)} 
-                variant="flat"
+                variant={isDark ? "bordered" : "flat"} // 暗黑模式用 Bordered
                 color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}
+                popoverProps={{ classNames: { content: commonClassNames.popoverContent } }}
             >
                 {(p) => (
                     <SelectItem key={p.name} value={p.name} textValue={p.name}>
                         <div className="flex items-center gap-2 justify-between">
                             <div className="flex items-center gap-2">
-                                {p.isExpanded && <Link2 size={12} className="text-secondary opacity-70"/>}
-                                <span className={`text-small ${p.isExpanded ? 'text-secondary' : ''}`}>{p.name}</span>
+                                {p.isExpanded && <Link2 size={12} className={isDark ? "text-[#56b6c2]" : "text-secondary opacity-70"}/>}
+                                <span className={`text-small ${p.isExpanded ? (isDark ? 'text-[#56b6c2]' : 'text-secondary') : ''}`}>{p.name}</span>
                             </div>
                             {currentDescKeys.has(p.name) && <span className="text-[10px] text-danger">已选降序</span>}
                         </div>
@@ -113,7 +117,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 )}
             </Select>
 
-            {/* 排序 - 降序 (使用 Secondary 色调) */}
+            {/* 排序 - 降序 (Secondary) */}
             <Select
                 label="降序 (Descending)"
                 placeholder="选择降序字段"
@@ -121,17 +125,18 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentDescKeys}
                 onSelectionChange={handleDescChange}
                 disabledKeys={Array.from(currentAscKeys)} 
-                variant="flat"
+                variant={isDark ? "bordered" : "flat"}
                 color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}
+                popoverProps={{ classNames: { content: commonClassNames.popoverContent } }}
             >
                 {(p) => (
                     <SelectItem key={p.name} value={p.name} textValue={p.name}>
                         <div className="flex items-center gap-2 justify-between">
                             <div className="flex items-center gap-2">
-                                {p.isExpanded && <Link2 size={12} className="text-secondary opacity-70"/>}
-                                <span className={`text-small ${p.isExpanded ? 'text-secondary' : ''}`}>{p.name}</span>
+                                {p.isExpanded && <Link2 size={12} className={isDark ? "text-[#56b6c2]" : "text-secondary opacity-70"}/>}
+                                <span className={`text-small ${p.isExpanded ? (isDark ? 'text-[#56b6c2]' : 'text-secondary') : ''}`}>{p.name}</span>
                             </div>
                             {currentAscKeys.has(p.name) && <span className="text-[10px] text-primary">已选升序</span>}
                         </div>

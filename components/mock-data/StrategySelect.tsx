@@ -16,6 +16,7 @@ interface StrategySelectProps {
     onChange: (value: string) => void;
     odataType: string;
     label?: string;
+    isDark?: boolean; // 新增
 }
 
 interface FlatItem {
@@ -29,7 +30,7 @@ interface FlatItem {
     strategy?: MockStrategy; // 为了获取 fakerModule/Method
 }
 
-export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange, odataType, label }) => {
+export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange, odataType, label, isDark }) => {
     const selectedStrategy = useMemo(() => ALL_STRATEGIES.find(s => s.value === value), [value]);
 
     // 优化：默认仅展开 Custom 和当前选中项所属的分类。移除 'Person' 默认展开以减少列表长度，帮助准确定位。
@@ -118,12 +119,18 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
         });
     };
 
+    const commonClassNames = {
+        trigger: `h-8 min-h-8 px-2 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#c678dd] data-[focus=true]:border-[#c678dd]' : ''}`,
+        value: `text-[11px] ${!isCurrentCompatible ? 'text-warning-600 font-medium' : ''} ${isDark ? 'text-[#c678dd]' : ''}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+    };
+
     return (
         // 使用 Secondary 色调 (紫粉色)
         <Select 
             aria-label={label || "Select Strategy"}
             size="sm" 
-            variant="flat"
+            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
             color="secondary" 
             selectedKeys={selectedKeys}
             onSelectionChange={(keys) => {
@@ -132,11 +139,9 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
             }}
             selectionMode="single"
             disallowEmptySelection
-            classNames={{ 
-                trigger: "h-8 min-h-8 px-2", 
-                value: `text-[11px] ${!isCurrentCompatible ? 'text-warning-600 font-medium' : ''}` 
-            }}
+            classNames={commonClassNames}
             items={flatItems}
+            popoverProps={{ classNames: { content: commonClassNames.popoverContent } }}
             renderValue={() => {
                 if (!selectedStrategy) return <span>Select...</span>;
                 return (
@@ -156,7 +161,11 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                         <SelectItem 
                             key={item.key} 
                             textValue={item.label}
-                            className="font-bold text-default-600 bg-default-50 sticky top-0 z-10 p-0 rounded-none border-b border-divider/50 data-[hover=true]:bg-default-100 outline-none"
+                            className={`font-bold sticky top-0 z-10 p-0 rounded-none border-b outline-none ${
+                                isDark 
+                                ? "text-[#5c6370] bg-[#21252b] border-[#3e4451] data-[hover=true]:bg-[#2c313a]" 
+                                : "text-default-600 bg-default-50 border-divider/50 data-[hover=true]:bg-default-100"
+                            }`}
                             isReadOnly
                         >
                             <div 
@@ -167,12 +176,12 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                                     toggleCategory(item.label);
                                 }}
                             >
-                                <div className="text-default-400">
+                                <div className={isDark ? "text-[#5c6370]" : "text-default-400"}>
                                     {/* 如果强制展开，显示固定图标或不显示折叠状态 */}
                                     {item.isExpanded ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
                                 </div>
                                 <span className="text-[11px] uppercase tracking-wider select-none">{item.label}</span>
-                                {isForcedOpen && <span className="text-[9px] text-default-400 ml-auto font-normal lowercase">(active)</span>}
+                                {isForcedOpen && <span className={`text-[9px] ml-auto font-normal lowercase ${isDark ? "text-[#5c6370]" : "text-default-400"}`}>(active)</span>}
                             </div>
                         </SelectItem>
                     );

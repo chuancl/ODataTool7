@@ -12,13 +12,15 @@ interface SelectFieldsProps {
     expandedProperties: any[];
     select: string;
     setSelect: (val: string) => void;
+    isDark?: boolean; // 新增
 }
 
 export const SelectFields: React.FC<SelectFieldsProps> = ({
     currentSchema,
     expandedProperties,
     select,
-    setSelect
+    setSelect,
+    isDark
 }) => {
     const ALL_KEY = '_ALL_';
 
@@ -74,13 +76,14 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium opacity-70",
-        value: "text-small"
+        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#98c379] data-[focus=true]:border-[#98c379]' : ''}`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
+        value: `text-small ${isDark ? 'text-[#98c379]' : ''}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
     };
 
     if (!currentSchema) {
-        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
+        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
     }
 
     return (
@@ -91,14 +94,15 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
             selectionMode="multiple"
             selectedKeys={currentSelectKeys}
             onSelectionChange={handleSelectChange}
-            variant="flat"
+            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
             color="success" 
             classNames={commonClassNames}
             items={selectItems}
+            popoverProps={{ classNames: { content: commonClassNames.popoverContent } }}
             renderValue={(items) => (
                 <div className="flex flex-wrap gap-1">
                     {items.map((item) => (
-                        <span key={item.key} className="text-xs truncate max-w-[100px]">
+                        <span key={item.key} className={`text-xs truncate max-w-[100px] ${isDark ? 'text-[#98c379]' : ''}`}>
                             {item.textValue}{items.length > 1 ? ',' : ''}
                         </span>
                     ))}
@@ -119,9 +123,9 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
                     <SelectItem key={item.name} value={item.name} textValue={item.name}>
                         <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                {item.isExpanded && <Link2 size={12} className="text-secondary opacity-70"/>}
+                                {item.isExpanded && <Link2 size={12} className={isDark ? "text-[#56b6c2]" : "text-secondary opacity-70"}/>}
                                 <div className="flex flex-col">
-                                    <span className={`text-small ${item.isExpanded ? 'text-secondary' : ''}`}>{item.name}</span>
+                                    <span className={`text-small ${item.isExpanded ? (isDark ? 'text-[#56b6c2]' : 'text-secondary') : ''}`}>{item.name}</span>
                                     <span className="text-tiny text-default-400">{item.type?.split('.').pop()}</span>
                                 </div>
                                 </div>

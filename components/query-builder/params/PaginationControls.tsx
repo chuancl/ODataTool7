@@ -14,17 +14,24 @@ interface PaginationControlsProps {
     setSkip: (val: string) => void;
     count: boolean;
     setCount: (val: boolean) => void;
+    isDark?: boolean; // 新增
 }
 
 export const PaginationControls: React.FC<PaginationControlsProps> = ({
     filter, onOpenFilter, onClearFilter,
     top, setTop,
     skip, setSkip,
-    count, setCount
+    count, setCount,
+    isDark
 }) => {
     return (
-        // 使用 bg-primary-50 (浅色) / bg-primary-50/10 (深色) 替代灰色
-        <div className="flex items-center rounded-xl px-3 bg-primary-50 hover:bg-primary-100 dark:bg-primary-50/10 dark:hover:bg-primary-50/20 transition-colors h-14 w-full overflow-hidden relative shadow-sm">
+        // 亮色模式：bg-primary-50 (鲜艳填充)
+        // 暗黑模式：One Dark Pro 风格 (深色背景 + 边框)
+        <div className={`flex items-center rounded-xl px-3 transition-colors h-14 w-full overflow-hidden relative shadow-sm ${
+            isDark 
+                ? "bg-[#282c34] border border-[#3e4451] hover:bg-[#2c313a]" 
+                : "bg-primary-50 hover:bg-primary-100"
+        }`}>
             
             {/* 1. Filter Section (Flex Grow + min-w-0 to prevent overflow) */}
             <div 
@@ -32,21 +39,25 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 onClick={onOpenFilter}
             >
                 <div className="flex items-center justify-between">
-                     <span className="text-[10px] text-default-500 group-hover:text-primary transition-colors font-medium">
+                     <span className={`text-[10px] font-medium transition-colors ${
+                         isDark ? "text-[#abb2bf] group-hover:text-[#61afef]" : "text-default-500 group-hover:text-primary"
+                     }`}>
                         过滤 ($filter)
                     </span>
                 </div>
                
-                <div className="flex items-center gap-2 h-6 text-small text-foreground w-full">
+                <div className="flex items-center gap-2 h-6 text-small w-full">
                     {filter ? (
                         <div className="flex items-center gap-1 w-full">
-                            <Filter size={14} className="text-primary shrink-0" />
+                            <Filter size={14} className={isDark ? "text-[#61afef]" : "text-primary"} />
                             {/* flex-1 + truncate ensures text takes available space but doesn't push others */}
-                            <span className="truncate font-mono text-xs flex-1" title={filter}>{filter}</span>
+                            <span className={`truncate font-mono text-xs flex-1 ${isDark ? "text-[#98c379]" : "text-foreground"}`} title={filter}>
+                                {filter}
+                            </span>
                             {/* Clear Button */}
                             <div 
                                 role="button"
-                                className="p-1 text-default-400 hover:text-danger z-10 shrink-0"
+                                className={`p-1 z-10 shrink-0 ${isDark ? "text-[#5c6370] hover:text-[#e06c75]" : "text-default-400 hover:text-danger"}`}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     onClearFilter();
@@ -56,22 +67,24 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                             </div>
                         </div>
                     ) : (
-                        <span className="text-default-400 text-xs italic group-hover:text-default-500 transition-colors truncate">
+                        <span className={`text-xs italic truncate transition-colors ${isDark ? "text-[#5c6370] group-hover:text-[#abb2bf]" : "text-default-400 group-hover:text-default-500"}`}>
                             点击构建过滤器...
                         </span>
                     )}
                 </div>
             </div>
 
-            {/* Divider - Slightly tinted divider */}
-            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mr-3" />
+            {/* Divider */}
+            <div className={`w-px h-8 shrink-0 mr-3 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
 
             {/* 2. Top Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
-                <label htmlFor="input-top" className="text-[10px] text-default-500 font-medium cursor-text w-full text-center">Top</label>
+                <label htmlFor="input-top" className={`text-[10px] font-medium cursor-text w-full text-center ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Top</label>
                 <input 
                     id="input-top"
-                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-400 focus:text-primary transition-colors"
+                    className={`w-full bg-transparent text-center font-mono text-sm outline-none h-6 transition-colors placeholder:text-default-400 ${
+                        isDark ? "text-[#d19a66] focus:text-[#e5c07b]" : "text-default-700 focus:text-primary"
+                    }`}
                     value={top || ''} 
                     onChange={(e) => setTop(e.target.value)}
                     placeholder="20"
@@ -79,14 +92,16 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mx-2" />
+            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
 
             {/* 3. Skip Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
-                <label htmlFor="input-skip" className="text-[10px] text-default-500 font-medium cursor-text w-full text-center">Skip</label>
+                <label htmlFor="input-skip" className={`text-[10px] font-medium cursor-text w-full text-center ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Skip</label>
                 <input 
                     id="input-skip"
-                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-400 focus:text-primary transition-colors"
+                    className={`w-full bg-transparent text-center font-mono text-sm outline-none h-6 transition-colors placeholder:text-default-400 ${
+                        isDark ? "text-[#d19a66] focus:text-[#e5c07b]" : "text-default-700 focus:text-primary"
+                    }`}
                     value={skip || ''}
                     onChange={(e) => setSkip(e.target.value)}
                     placeholder="0"
@@ -94,11 +109,11 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mx-2" />
+            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
 
             {/* 4. Count Section (shrink-0) */}
             <div className="flex flex-col items-center justify-center h-full min-w-[50px] shrink-0">
-                 <span className="text-[10px] text-default-500 font-medium mb-1">Count</span>
+                 <span className={`text-[10px] font-medium mb-1 ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Count</span>
                  <Switch 
                     size="sm" 
                     isSelected={count} 
@@ -106,7 +121,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                     aria-label="Count"
                     color="primary"
                     classNames={{
-                        wrapper: "group-data-[selected=true]:bg-primary h-5",
+                        wrapper: `${isDark ? "group-data-[selected=true]:bg-[#98c379]" : "group-data-[selected=true]:bg-primary"} h-5`,
                         thumb: cn("w-3 h-3 group-data-[selected=true]:ml-3")
                     }}
                 />

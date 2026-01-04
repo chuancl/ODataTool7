@@ -11,13 +11,15 @@ interface ExpandSelectProps {
     schema: ParsedSchema | null;
     expand: string;
     setExpand: (val: string) => void;
+    isDark?: boolean; // 新增
 }
 
 export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     currentSchema,
     schema,
     expand,
-    setExpand
+    setExpand,
+    isDark
 }) => {
     // 本地状态：控制下拉框中哪些节点是"视觉上"展开的 (用于查看下级)
     const [treeExpandedKeys, setTreeExpandedKeys] = useState<Set<string>>(new Set());
@@ -123,13 +125,14 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium opacity-70",
-        value: "text-small"
+        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#e5c07b] data-[focus=true]:border-[#e5c07b]' : ''}`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
+        value: `text-small ${isDark ? 'text-[#e5c07b]' : ''}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
     };
 
     if (!currentSchema) {
-        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant="flat" classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
+        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
     }
 
     return (
@@ -140,10 +143,11 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
             selectionMode="multiple"
             selectedKeys={currentExpandKeys}
             onSelectionChange={handleExpandChange}
-            variant="flat"
+            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
             color="warning" 
             classNames={commonClassNames}
             items={expandItems}
+            popoverProps={{ classNames: { content: commonClassNames.popoverContent } }}
         >
             {(item) => {
                 if (item.type === 'placeholder') {
@@ -158,7 +162,9 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                                 {item.hasChildren ? (
                                     <div 
                                         role="button"
-                                        className="p-0.5 hover:bg-default-200 rounded cursor-pointer text-default-500 z-50 flex items-center justify-center transition-colors"
+                                        className={`p-0.5 rounded cursor-pointer z-50 flex items-center justify-center transition-colors ${
+                                            isDark ? "text-[#5c6370] hover:text-[#abb2bf] hover:bg-[#3e4451]" : "hover:bg-default-200 text-default-500"
+                                        }`}
                                         // 阻止所有可能触发选中的事件冒泡
                                         onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                         onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); }}
@@ -176,9 +182,9 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                                 )}
 
                                 <div className="flex flex-col">
-                                    <span className="text-small">{item.label}</span>
+                                    <span className={`text-small ${isDark && currentExpandKeys.has(item.name) ? 'text-[#e5c07b]' : ''}`}>{item.label}</span>
                                     {item.targetType && (
-                                        <span className="text-[9px] text-default-400">
+                                        <span className={`text-[9px] ${isDark ? "text-[#5c6370]" : "text-default-400"}`}>
                                             To: {item.targetType?.split('.').pop()}
                                         </span>
                                     )}
