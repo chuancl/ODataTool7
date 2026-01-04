@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@nextui-org/button";
 import { Chip } from "@nextui-org/chip";
-import { Trash, Save, Pencil, Check, X, Plus } from 'lucide-react';
+import { Trash, Save, Pencil, Check, X, Plus, Settings2 } from 'lucide-react';
 
 interface TableHeaderProps {
     isRoot: boolean;
@@ -12,7 +12,6 @@ interface TableHeaderProps {
     onConfirmUpdate: () => void;
     onDelete: () => void;
     onExport: () => void;
-    // New Props for customization
     onCreate?: () => void;
     enableEdit?: boolean;
     enableDelete?: boolean;
@@ -32,58 +31,54 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     enableDelete = true,
     hideUpdateButton = false
 }) => {
-    // 逻辑修正：如果是子表 (非 Root)，完全不显示表头工具栏。
-    // 编辑控制完全由主表按钮统一处理。
     if (!isRoot) return null;
 
     return (
-        <div className="bg-default-50 p-2 flex gap-2 border-b border-divider items-center justify-between shrink-0 h-12">
-             <div className="flex items-center gap-2">
-                {/* Header Left Content */}
+        <div className="flex gap-4 items-center justify-between shrink-0 mb-1 px-1">
+             <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-small font-bold text-default-700">
+                    <Settings2 size={16} className="text-primary"/>
+                    <span>Data Actions</span>
+                </div>
                 {isEditing && (
-                    <Chip size="sm" color="warning" variant="flat" className="animate-pulse">编辑模式 (Editing)</Chip>
+                    <Chip size="sm" color="warning" variant="flat" className="h-5 text-[10px]">Editing Mode</Chip>
                 )}
              </div>
              
              <div className="flex gap-2">
-                 {/* Create Button: Only for Root or if specifically enabled/needed */}
                 {onCreate && (
-                    <Button size="sm" color="primary" variant="solid" onPress={onCreate} startContent={<Plus size={14} />}>
-                        新增选中 (Create Selected)
+                    <Button size="sm" color="primary" variant="shadow" className="font-medium" onPress={onCreate} startContent={<Plus size={14} />}>
+                        Create Selected
                     </Button>
                 )}
 
-                {/* 1. Modify Button: Show only if enabled and not editing */}
                 {enableEdit && !isEditing && (
-                    <Button size="sm" variant="flat" onPress={onStartEdit} startContent={<Pencil size={14} />}>
-                        修改 (Modify)
+                    <Button size="sm" variant="flat" className="bg-default-100 hover:bg-default-200" onPress={onStartEdit} startContent={<Pencil size={14} />}>
+                        Edit
                     </Button>
                 )}
 
-                {/* 2. Update/Cancel Buttons: Show only when editing */}
                 {enableEdit && isEditing && (
                     <>
                         {!hideUpdateButton && (
-                            <Button size="sm" color="success" variant="solid" className="text-white" onPress={onConfirmUpdate} startContent={<Check size={14} />}>
-                                更新 (Update)
+                            <Button size="sm" color="success" variant="shadow" className="text-white font-medium" onPress={onConfirmUpdate} startContent={<Check size={14} />}>
+                                Save Changes
                             </Button>
                         )}
-                        <Button size="sm" color="default" variant="flat" onPress={onCancelEdit} startContent={<X size={14} />}>
-                            取消 (Cancel)
+                        <Button size="sm" color="danger" variant="flat" onPress={onCancelEdit} startContent={<X size={14} />}>
+                            Cancel
                         </Button>
                     </>
                 )}
                 
-                {/* 3. Delete Button: Show only if enabled */}
                 {enableDelete && (
-                    <Button size="sm" color="danger" variant="light" onPress={onDelete} startContent={<Trash size={14} />}>
-                        删除 (Delete)
+                    <Button size="sm" color="danger" variant="ghost" onPress={onDelete} startContent={<Trash size={14} />}>
+                        Delete
                     </Button>
                 )}
 
-                {/* 4. Export Button */}
-                <Button size="sm" color="primary" variant="light" onPress={onExport} startContent={<Save size={14} />}>
-                    导出 Excel
+                <Button size="sm" variant="bordered" className="border-default-200" onPress={onExport} startContent={<Save size={14} />}>
+                    Export
                 </Button>
             </div>
         </div>

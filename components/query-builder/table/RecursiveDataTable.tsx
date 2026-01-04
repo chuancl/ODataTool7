@@ -30,17 +30,17 @@ interface RecursiveDataTableProps {
     isRoot?: boolean; 
     onDelete?: (selectedRows: any[]) => void; 
     onUpdate?: (updates: { item: any, changes: any }[]) => void;
-    onCreate?: (selectedRows: any[]) => void; // 新增：Create Callback
+    onCreate?: (selectedRows: any[]) => void;
     onExport?: () => void;
     loading?: boolean;
     parentSelected?: boolean; 
     entityName?: string;
     schema?: ParsedSchema | null;
-    enableEdit?: boolean; // 新增：控制是否允许编辑
-    enableDelete?: boolean; // 新增：控制是否允许删除
-    hideUpdateButton?: boolean; // 新增：在编辑模式下隐藏更新按钮 (用于 Mock Data)
-    onDraftChange?: (draft: Record<number, Record<string, any>>) => void; // 新增：Draft 变更回调
-    externalIsEditing?: boolean; // 新增：外部控制的编辑状态
+    enableEdit?: boolean;
+    enableDelete?: boolean;
+    hideUpdateButton?: boolean;
+    onDraftChange?: (draft: Record<number, Record<string, any>>) => void;
+    externalIsEditing?: boolean;
 }
 
 export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({ 
@@ -67,7 +67,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         return 1000;
     });
 
-    // --- Toast ---
     const toast = useToast();
 
     // --- Table State ---
@@ -81,13 +80,11 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
     const [isEditing, setIsEditing] = useState(false);
     const [editDraft, setEditDraft] = useState<Record<number, Record<string, any>>>({});
 
-    // --- Context for Recursive Updates ---
     const parentContext = useTableContext();
     const tableId = useMemo(() => Math.random().toString(36).substr(2, 9), []);
-    // Only Root maintains the registry
     const registryRef = useRef<Map<string, GetUpdatesFn>>(new Map());
 
-    // --- 1. 初始化及同步选中状态 ---
+    // --- Effects ---
     useEffect(() => {
         const newSelection: RowSelectionState = {};
         data.forEach((row, index) => {
@@ -97,9 +94,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         });
         setRowSelection(newSelection);
         
-        // Fix: 只有在非外部控制模式下，才因数据变更重置编辑状态。
-        // 如果 externalIsEditing 有值 (无论是 true 还是 false)，说明父级在控制，
-        // 此时不要因为 parentSelected 变化 (导致 data 引用变化) 而重置子表状态。
         if (externalIsEditing === undefined) {
             setEditDraft({});
             onDraftChange?.({});
@@ -107,11 +101,9 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         }
     }, [data, parentSelected, externalIsEditing]);
 
-    // 同步外部编辑状态
     useEffect(() => {
         if (externalIsEditing !== undefined) {
             setIsEditing(externalIsEditing);
-            // 只有当明确关闭编辑模式时，才清理草稿
             if (!externalIsEditing) {
                 setEditDraft({});
                 onDraftChange?.({});
@@ -119,7 +111,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         }
     }, [externalIsEditing]);
 
-    // 监听容器宽度变化
     useEffect(() => {
         if (!tableContainerRef.current) return;
         const observer = new ResizeObserver(entries => {
@@ -141,7 +132,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
 
         if (schema && entityName && schema.entities) {
             let entityType = schema.entities.find(e => e.name === entityName);
-            // 尝试模糊匹配或查找 EntitySet 对应的 Type
             if (!entityType) {
                 const es = schema.entitySets.find(s => s.name === entityName);
                 if (es) {
@@ -181,8 +171,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         const changedIndices = Object.keys(editDraft).map(Number);
         
         changedIndices.forEach(idx => {
-            // Check row selection (handle both number and string keys)
-            // 修改点：这里的逻辑确保了只收集“被勾选”的行的修改
             const isSelected = rowSelection[idx] === true || rowSelection[String(idx)] === true;
 
             if (isSelected) {
@@ -192,7 +180,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                 const realChanges: any = {};
                 let hasChanges = false;
                 Object.entries(changes).forEach(([key, newVal]) => {
-                    // Loose equality check to handle string vs number inputs
                     if (originalItem[key] != newVal) {
                         realChanges[key] = newVal;
                         hasChanges = true;
@@ -207,7 +194,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         return updates;
     }, [editDraft, rowSelection, data]);
 
-    // --- Register to Parent Context (if Sub-Table) ---
     useEffect(() => {
         if (!isRoot && parentContext) {
             parentContext.register(tableId, getLocalUpdates);
@@ -215,11 +201,8 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         }
     }, [isRoot, parentContext, tableId, getLocalUpdates]);
 
-    // --- Edit Handlers (Root Only mostly) ---
-    const handleStartEdit = () => {
-        setIsEditing(true);
-    };
-
+    // --- Handlers ---
+    const handleStartEdit = () => setIsEditing(true);
     const handleCancelEdit = () => {
         setIsEditing(false);
         setEditDraft({});
@@ -227,32 +210,22 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
     };
 
     const handleConfirmUpdate = () => {
-        if (!onUpdate) {
-            console.error("No onUpdate handler provided");
-            return;
-        }
-        
-        // 1. Get Root Updates
+        if (!onUpdate) return;
         const allUpdates: UpdateResult[] = [...getLocalUpdates()];
-
-        // 2. Get Children Updates (if Root)
         if (isRoot) {
             registryRef.current.forEach(getUpdatesFn => {
                 allUpdates.push(...getUpdatesFn());
             });
         }
-
         if (allUpdates.length === 0) {
-             // 简单的检查，如果真的有输入但没勾选，给提示
              const hasDrafts = Object.keys(editDraft).length > 0; 
              if (hasDrafts) {
-                 toast.warning("检测到修改，但未选中对应行。\n请勾选修改过的行再点击更新。\n(Changes detected but rows not selected. Please select modified rows.)");
+                 toast.warning("检测到修改，但未选中对应行。\n请勾选修改过的行再点击更新。");
              } else {
-                 toast.info("未检测到任何实质性修改 (No changes detected)");
+                 toast.info("未检测到任何实质性修改");
              }
              return;
         }
-
         onUpdate(allUpdates);
     };
 
@@ -269,14 +242,12 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
             return next;
         });
         
-        // 自动选中正在修改的行 (Auto-select row on edit)
         if (!rowSelection[rowIndex] && !rowSelection[String(rowIndex)]) {
             setRowSelection(prev => ({ ...prev, [rowIndex]: true }));
             updateRecursiveSelection(data[rowIndex], true);
         }
     };
 
-    // --- Columns Definition (Use Hook) ---
     const columns = useTableColumns({
         data,
         containerWidth,
@@ -286,13 +257,9 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         navPropSet
     });
 
-    // Sync column order
     useEffect(() => {
         if (columns.length > 0) {
-            setColumnOrder(prev => {
-                 const newOrder = columns.map(c => c.id as string);
-                 return newOrder;
-            });
+            setColumnOrder(prev => columns.map(c => c.id as string));
         }
     }, [columns]); 
 
@@ -334,51 +301,29 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         columnResizeMode: 'onChange',
     });
 
-    const handleExport = () => {
-        exportToExcel(data, entityName, toast);
-    };
-
+    const handleExport = () => exportToExcel(data, entityName, toast);
     const handleDeleteClick = () => {
         const selectedRows = data.filter(r => r['__selected'] === true);
-        if (onDelete) {
-            onDelete(selectedRows);
-        }
+        if (onDelete) onDelete(selectedRows);
     };
-
-    // 处理新增点击：合并修改草稿
     const handleCreateClick = () => {
         const selectedRowsWithEdits: any[] = [];
-        
         data.forEach((row, idx) => {
-            // Check if selected using the mutation marker
             if (row['__selected'] === true) {
                 const draft = editDraft[idx];
-                if (draft) {
-                    // Merge edits into original row for creation payload
-                    selectedRowsWithEdits.push({ ...row, ...draft });
-                } else {
-                    selectedRowsWithEdits.push(row);
-                }
+                selectedRowsWithEdits.push(draft ? { ...row, ...draft } : row);
             }
         });
-
-        if (onCreate) {
-            onCreate(selectedRowsWithEdits);
-        }
+        if (onCreate) onCreate(selectedRowsWithEdits);
     };
 
-    // --- Provider Logic (If Root) ---
     const contextValue: TableContextType = useMemo(() => ({
-        register: (id, getUpdates) => {
-            registryRef.current.set(id, getUpdates);
-        },
-        unregister: (id) => {
-            registryRef.current.delete(id);
-        }
+        register: (id, getUpdates) => { registryRef.current.set(id, getUpdates); },
+        unregister: (id) => { registryRef.current.delete(id); }
     }), []);
 
     const tableContent = (
-        <div className="h-full flex flex-col bg-content1 overflow-hidden">
+        <div className="flex flex-col h-full w-full gap-2 p-3 bg-content1 rounded-medium shadow-none overflow-hidden relative">
             <TableHeader 
                 isRoot={isRoot}
                 isEditing={isEditing}
@@ -393,18 +338,24 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                 hideUpdateButton={hideUpdateButton}
             />
 
-            <div className="overflow-auto flex-1 w-full bg-content1 scrollbar-thin" ref={tableContainerRef}>
+            <div className="flex-1 w-full overflow-auto relative rounded-lg border border-divider scrollbar-thin scrollbar-thumb-default-300" ref={tableContainerRef}>
                 <table 
-                    className="w-full text-left border-collapse table-fixed"
-                    style={{ width: table.getTotalSize() }}
+                    className="min-w-full table-fixed border-separate border-spacing-0"
+                    style={{ width: Math.max(table.getTotalSize(), containerWidth - 24) }}
                 >
-                    <thead className="sticky top-0 z-20 bg-default-50/90 backdrop-blur-md shadow-sm border-b border-divider">
+                    <thead className="sticky top-0 z-20 shadow-sm [&>tr]:first:rounded-lg">
                         {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
+                            <tr key={headerGroup.id} className="h-10">
+                                {headerGroup.headers.map((header, index) => (
                                     <th 
                                         key={header.id} 
-                                        className="relative p-2 py-3 text-xs font-bold text-default-600 select-none group border-r border-divider/10 hover:bg-default-100 transition-colors"
+                                        className={`
+                                            bg-default-100 text-default-500 text-tiny font-bold uppercase px-3 py-2 text-left
+                                            border-b border-divider
+                                            ${index === 0 ? 'rounded-tl-lg rounded-bl-lg' : ''}
+                                            ${index === headerGroup.headers.length - 1 ? 'rounded-tr-lg rounded-br-lg' : ''}
+                                            relative group select-none whitespace-nowrap overflow-hidden
+                                        `}
                                         style={{ width: header.getSize() }}
                                         draggable={!header.isPlaceholder && !['expander', 'select', 'index'].includes(header.id)}
                                         onDragStart={(e) => {
@@ -432,35 +383,35 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                             }
                                         }}
                                     >
-                                        <div className="flex items-center gap-1 w-full overflow-hidden justify-center">
+                                        <div className="flex items-center gap-1 w-full justify-between">
+                                            {/* Grip for Draggable columns */}
                                             {!['expander', 'select', 'index'].includes(header.id) && (
-                                                <GripVertical size={12} className="text-default-300 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity shrink-0 absolute left-1" />
+                                                <GripVertical size={12} className="text-default-300 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity shrink-0 absolute left-0.5" />
                                             )}
-                                            {['expander', 'select', 'index'].includes(header.id) ? (
-                                                <div className="flex items-center justify-center w-full">
+                                            
+                                            {/* Header Content */}
+                                            <div 
+                                                className={`flex-1 flex items-center gap-1 overflow-hidden ${!['expander', 'select', 'index'].includes(header.id) ? 'pl-3' : 'justify-center'}`}
+                                                onClick={header.column.getToggleSortingHandler()}
+                                                style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}
+                                            >
+                                                <span className="truncate flex-1">
                                                     {flexRender(header.column.columnDef.header, header.getContext())}
-                                                </div>
-                                            ) : (
-                                                <div 
-                                                    className="flex items-center gap-1 cursor-pointer flex-1 overflow-hidden pl-4"
-                                                    onClick={header.column.getToggleSortingHandler()}
-                                                >
-                                                    <span className="truncate" title={header.column.id}>
-                                                        {flexRender(header.column.columnDef.header, header.getContext())}
-                                                    </span>
-                                                    {{
-                                                        asc: <ChevronUp size={12} className="text-primary shrink-0" />,
-                                                        desc: <ChevronDown size={12} className="text-primary shrink-0" />,
-                                                    }[header.column.getIsSorted() as string] ?? null}
-                                                </div>
-                                            )}
+                                                </span>
+                                                {{
+                                                    asc: <ChevronUp size={12} className="text-primary shrink-0" />,
+                                                    desc: <ChevronDown size={12} className="text-primary shrink-0" />,
+                                                }[header.column.getIsSorted() as string] ?? null}
+                                            </div>
                                         </div>
+
+                                        {/* Resize Handle */}
                                         {header.column.getCanResize() && (
                                             <div
                                                 onMouseDown={header.getResizeHandler()}
                                                 onTouchStart={header.getResizeHandler()}
-                                                className={`absolute right-0 top-0 h-full w-1 cursor-col-resize touch-none select-none hover:bg-primary/50 transition-colors z-10 ${
-                                                    header.column.getIsResizing() ? 'bg-primary w-1' : 'bg-transparent'
+                                                className={`absolute right-0 top-1/4 h-1/2 w-1 cursor-col-resize touch-none select-none rounded hover:bg-primary/50 transition-colors z-30 ${
+                                                    header.column.getIsResizing() ? 'bg-primary' : 'bg-default-300/50'
                                                 }`}
                                             />
                                         )}
@@ -469,32 +420,40 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                             </tr>
                         ))}
                     </thead>
-                    <tbody>
+                    <tbody className="bg-content1">
+                        {/* Spacing Row */}
+                        <tr className="h-1"></tr>
+                        
                         {table.getRowModel().rows.map((row, idx) => (
                             <React.Fragment key={row.id}>
                                 <tr 
                                     className={`
-                                        border-b border-divider/40 last:border-0 transition-colors
-                                        hover:bg-primary/5
-                                        ${row.getIsSelected() ? 'bg-primary/10' : (idx % 2 === 0 ? 'bg-transparent' : 'bg-default-50/30')}
-                                        ${row.getIsExpanded() ? 'bg-default-100 border-b-0' : ''}
+                                        group outline-none transition-all duration-200
+                                        border-b border-divider/50 last:border-0
+                                        hover:bg-default-100/60
+                                        data-[selected=true]:bg-primary-50 data-[selected=true]:text-primary-700
+                                        ${row.getIsExpanded() ? 'bg-default-50 border-b-0 shadow-inner' : ''}
                                     `}
+                                    data-selected={row.getIsSelected()}
                                 >
                                     {row.getVisibleCells().map(cell => (
                                         <td 
                                             key={cell.id} 
-                                            className="p-2 text-sm text-default-700 align-middle overflow-hidden border-r border-divider/10 last:border-0"
-                                            style={{ width: cell.column.getSize() }}
+                                            className={`
+                                                p-2 px-3 text-small font-normal align-middle
+                                                whitespace-nowrap overflow-hidden text-ellipsis
+                                                ${cell.column.id === 'select' ? 'text-center' : ''}
+                                                first:rounded-l-lg last:rounded-r-lg
+                                            `}
+                                            style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
                                         >
-                                            <div className="w-full">
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </div>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </td>
                                     ))}
                                 </tr>
                                 {row.getIsExpanded() && (
                                     <tr className="bg-default-50/50">
-                                        <td colSpan={row.getVisibleCells().length} className="p-0 border-b border-divider">
+                                        <td colSpan={row.getVisibleCells().length} className="p-0 border-b border-divider rounded-b-lg overflow-hidden">
                                             <ExpandedRowView 
                                                 rowData={row.original} 
                                                 isDark={isDark} 
@@ -502,7 +461,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                                 schema={schema} 
                                                 parentEntityName={entityName}
                                                 onUpdate={onUpdate}
-                                                isEditing={isEditing} // Pass current editing state to expanded view
+                                                isEditing={isEditing}
                                             />
                                         </td>
                                     </tr>
@@ -514,14 +473,13 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                 
                 {data.length === 0 && !loading && (
                     <div className="flex flex-col items-center justify-center h-40 text-default-400">
-                        <p>暂无数据</p>
+                        <p className="text-small">暂无数据 (No Data)</p>
                     </div>
                 )}
             </div>
         </div>
     );
 
-    // If Root, Wrap in Provider to manage updates for all descendants.
     if (isRoot) {
         return (
             <TableContext.Provider value={contextValue}>

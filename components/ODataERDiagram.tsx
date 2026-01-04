@@ -4,7 +4,8 @@ import ReactFlow, {
   Controls, 
   Background, 
   ReactFlowProvider,
-  useReactFlow
+  useReactFlow,
+  BackgroundVariant
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ParsedSchema } from '@/utils/odata-helper';
@@ -167,7 +168,7 @@ const ODataERDiagramContent: React.FC<Props> = ({ url, schema, isLoading, xmlCon
                     color={isDark ? "#3e4451" : "#d6d3d1"} 
                     gap={20} 
                     size={isDark ? 1 : 2} 
-                    variant={isDark ? undefined : "dots"}
+                    variant={isDark ? undefined : BackgroundVariant.Dots}
                     style={isDark ? {} : { backgroundColor: '#D5F5E3' }}
                 />
             </ReactFlow>

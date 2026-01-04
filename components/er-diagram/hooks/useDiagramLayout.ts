@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNodesState, useEdgesState, type Node, type Edge } from 'reactflow';
+import { useNodesState, useEdgesState, type Node, type Edge, MarkerType } from 'reactflow';
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { ParsedSchema } from '@/utils/odata-helper';
 import { generateHashCode, getEntityTheme, computeGraphColoring } from '../utils';
@@ -186,8 +186,8 @@ export const useDiagramLayout = ({ schema, isDark, isPerformanceMode }: UseDiagr
                 targetHandle: undefined, 
                 type: 'relationship', 
                 pathOptions: { borderRadius: 20 },
-                markerStart: { type: 'arrowclosed', color: e.data.sourceColor },
-                markerEnd: { type: 'arrowclosed', color: e.data.targetColor },
+                markerStart: { type: MarkerType.ArrowClosed, color: e.data.sourceColor },
+                markerEnd: { type: MarkerType.ArrowClosed, color: e.data.targetColor },
                 animated: false,
                 style: { stroke: `url(#${e.data.gradientId})`, strokeWidth: 6, opacity: isDark ? 0.8 : 1 }, 
                 data: e.data
@@ -245,8 +245,8 @@ export const useDiagramLayout = ({ schema, isDark, isPerformanceMode }: UseDiagr
                 ...e, 
                 animated: false, 
                 style: { stroke: gradientStroke, strokeWidth: 6, opacity: isDark ? 0.8 : 1 },
-                markerStart: { type: 'arrowclosed', color: sourceColor },
-                markerEnd: { type: 'arrowclosed', color: targetColor },
+                markerStart: { type: MarkerType.ArrowClosed, color: sourceColor },
+                markerEnd: { type: MarkerType.ArrowClosed, color: targetColor },
                 zIndex: 0
               };
             }));
@@ -287,8 +287,8 @@ export const useDiagramLayout = ({ schema, isDark, isPerformanceMode }: UseDiagr
                     opacity: isVisible ? 1 : 0.1, 
                     zIndex: isVisible ? 10 : 0
                 },
-                markerStart: { type: 'arrowclosed', color: startMarkerColor },
-                markerEnd: { type: 'arrowclosed', color: markerColor },
+                markerStart: { type: MarkerType.ArrowClosed, color: startMarkerColor },
+                markerEnd: { type: MarkerType.ArrowClosed, color: markerColor },
             };
         }));
     }, [highlightedIds, setNodes, setEdges, isDark]);
