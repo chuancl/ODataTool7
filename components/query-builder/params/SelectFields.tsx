@@ -75,7 +75,7 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
 
     const commonClassNames = {
         trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium text-default-500",
+        label: "text-[10px] font-medium opacity-70",
         value: "text-small"
     };
 
@@ -84,6 +84,7 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
     }
 
     return (
+        // 使用 Success 色调 (绿色)
         <Select
             label="字段 ($select)"
             placeholder="选择返回字段"
@@ -91,6 +92,7 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
             selectedKeys={currentSelectKeys}
             onSelectionChange={handleSelectChange}
             variant="flat"
+            color="success" 
             classNames={commonClassNames}
             items={selectItems}
             renderValue={(items) => (

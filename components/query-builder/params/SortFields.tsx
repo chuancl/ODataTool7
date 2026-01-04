@@ -72,7 +72,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
 
     const commonClassNames = {
         trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium text-default-500",
+        label: "text-[10px] font-medium opacity-70",
         value: "text-small"
     };
 
@@ -87,7 +87,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
 
     return (
         <>
-            {/* 排序 - 升序 */}
+            {/* 排序 - 升序 (使用 Secondary 色调) */}
             <Select
                 label="升序 (Ascending)"
                 placeholder="选择升序字段"
@@ -96,6 +96,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 onSelectionChange={handleAscChange}
                 disabledKeys={Array.from(currentDescKeys)} 
                 variant="flat"
+                color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}
             >
@@ -112,7 +113,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 )}
             </Select>
 
-            {/* 排序 - 降序 */}
+            {/* 排序 - 降序 (使用 Secondary 色调) */}
             <Select
                 label="降序 (Descending)"
                 placeholder="选择降序字段"
@@ -121,6 +122,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 onSelectionChange={handleDescChange}
                 disabledKeys={Array.from(currentAscKeys)} 
                 variant="flat"
+                color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}
             >

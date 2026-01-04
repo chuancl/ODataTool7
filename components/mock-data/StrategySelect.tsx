@@ -119,10 +119,12 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
     };
 
     return (
+        // 使用 Secondary 色调 (紫粉色)
         <Select 
             aria-label={label || "Select Strategy"}
             size="sm" 
-            variant="flat" 
+            variant="flat"
+            color="secondary" 
             selectedKeys={selectedKeys}
             onSelectionChange={(keys) => {
                 const k = Array.from(keys)[0] as string;

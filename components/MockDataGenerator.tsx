@@ -214,10 +214,12 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
         <CardBody className="p-3">
            <div className="flex flex-col md:flex-row gap-4 items-end justify-between">
               <div className="flex items-center gap-4 flex-1 w-full">
+                {/* 使用 Primary 色调 */}
                 <Select 
                     label="Target Entity" 
                     size="sm" 
-                    variant="flat" 
+                    variant="flat"
+                    color="primary" 
                     className="max-w-[240px]"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onChange={(e) => setSelectedEntity(e.target.value)}
@@ -231,6 +233,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                     onValueChange={setCount} 
                     className="max-w-[100px]" 
                     variant="flat"
+                    color="primary"
                     size="sm"
                 />
                 <Button color="primary" onPress={generateData} startContent={<Sparkles size={16}/>} className="font-semibold">
@@ -280,28 +283,29 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                                     />
 
                                     {/* Auto-Increment Settings - Always visible for 'custom.increment' */}
+                                    {/* Inputs use Primary Color */}
                                     {conf.strategy === 'custom.increment' && (
                                         <div className="grid grid-cols-2 gap-2 mt-1 bg-default-50 p-2 rounded border border-divider">
                                             <Input 
-                                                label="Start" size="sm" type="number" variant="flat"
+                                                label="Start" size="sm" type="number" variant="flat" color="primary"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.start)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'start', Number(v))}
                                             />
                                             <Input 
-                                                label="Step" size="sm" type="number" variant="flat"
+                                                label="Step" size="sm" type="number" variant="flat" color="primary"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.step)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'step', Number(v))}
                                             />
                                             <Input 
-                                                label="Prefix" size="sm" variant="flat"
+                                                label="Prefix" size="sm" variant="flat" color="primary"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.prefix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'prefix', v)}
                                             />
                                             <Input 
-                                                label="Suffix" size="sm" variant="flat"
+                                                label="Suffix" size="sm" variant="flat" color="primary"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.suffix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'suffix', v)}

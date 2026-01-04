@@ -117,19 +117,20 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
             {/* --- 左侧控制面板 (实体, 过滤, 分页) [col-span-3] --- */}
             {/* 使用 gap-4 以匹配右侧 grid gap */}
             <div className="md:col-span-3 flex flex-col gap-4">
-                {/* 1. 实体集选择 */}
+                {/* 1. 实体集选择 - 使用 Primary 色调 */}
                 <Select
                     label="实体集 (Entity Set)"
                     placeholder="选择实体"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onSelectionChange={onEntityChange}
                     variant="flat"
+                    color="primary"
                     // 移除 size="sm" 以使用默认高度 (通常也是 h-14 左右，与我们的 Toolbar 对齐)
                     // 或者显式设置高度 class
                     className="w-full"
                     classNames={{
                         trigger: "h-14 min-h-14", // Force height to match toolbar
-                        label: "text-[10px] font-medium text-default-500",
+                        label: "text-[10px] font-medium opacity-70",
                         value: "text-small font-bold"
                     }}
                     items={entitySets.map(e => ({ key: e, label: e }))}

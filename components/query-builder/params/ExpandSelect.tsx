@@ -124,7 +124,7 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
 
     const commonClassNames = {
         trigger: "h-14 min-h-14",
-        label: "text-[10px] font-medium text-default-500",
+        label: "text-[10px] font-medium opacity-70",
         value: "text-small"
     };
 
@@ -133,6 +133,7 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     }
 
     return (
+        // 使用 Warning 色调 (橙黄色)
         <Select
             label="展开 ($expand)"
             placeholder="选择关联实体"
@@ -140,6 +141,7 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
             selectedKeys={currentExpandKeys}
             onSelectionChange={handleExpandChange}
             variant="flat"
+            color="warning" 
             classNames={commonClassNames}
             items={expandItems}
         >

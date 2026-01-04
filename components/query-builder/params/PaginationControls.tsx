@@ -23,7 +23,8 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
     count, setCount
 }) => {
     return (
-        <div className="flex items-center rounded-xl px-3 bg-default-100 hover:bg-default-200 transition-colors h-14 w-full overflow-hidden relative shadow-sm">
+        // 使用 bg-primary-50 (浅色) / bg-primary-50/10 (深色) 替代灰色
+        <div className="flex items-center rounded-xl px-3 bg-primary-50 hover:bg-primary-100 dark:bg-primary-50/10 dark:hover:bg-primary-50/20 transition-colors h-14 w-full overflow-hidden relative shadow-sm">
             
             {/* 1. Filter Section (Flex Grow + min-w-0 to prevent overflow) */}
             <div 
@@ -62,8 +63,8 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 </div>
             </div>
 
-            {/* Divider */}
-            <div className="w-px h-8 bg-divider shrink-0 mr-3" />
+            {/* Divider - Slightly tinted divider */}
+            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mr-3" />
 
             {/* 2. Top Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
@@ -78,7 +79,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className="w-px h-8 bg-divider shrink-0 mx-2" />
+            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mx-2" />
 
             {/* 3. Skip Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
@@ -93,7 +94,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className="w-px h-8 bg-divider shrink-0 mx-2" />
+            <div className="w-px h-8 bg-primary-200/50 dark:bg-white/10 shrink-0 mx-2" />
 
             {/* 4. Count Section (shrink-0) */}
             <div className="flex flex-col items-center justify-center h-full min-w-[50px] shrink-0">
@@ -103,6 +104,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                     isSelected={count} 
                     onValueChange={setCount} 
                     aria-label="Count"
+                    color="primary"
                     classNames={{
                         wrapper: "group-data-[selected=true]:bg-primary h-5",
                         thumb: cn("w-3 h-3 group-data-[selected=true]:ml-3")
