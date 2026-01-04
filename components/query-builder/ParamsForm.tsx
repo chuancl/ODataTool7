@@ -106,14 +106,14 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
 
     // One Dark Pro Theme Styles for Select
     const selectClassNames = {
-        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#61afef] data-[focus=true]:border-[#61afef]' : ''}`, // Force One Dark Pro BG
+        trigger: `h-14 min-h-14 ${isDark ? 'bg-transparent border-[#3e4451] data-[hover=true]:border-[#61afef] data-[focus=true]:border-[#61afef]' : ''}`, 
         label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
         value: `text-small font-bold ${isDark ? 'text-[#61afef]' : ''}`,
         popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
     };
 
     return (
-        <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl shadow-sm border shrink-0 ${isDark ? 'bg-[#21252b] border-[#3e4451]' : 'bg-content1 border-divider'}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl shadow-sm border shrink-0 bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
             {/* Filter Modal Component */}
             <FilterBuilderModal 
                 isOpen={isFilterModalOpen}

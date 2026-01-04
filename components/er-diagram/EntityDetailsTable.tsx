@@ -242,20 +242,19 @@ export const EntityDetailsTable = ({
         columnResizeMode: 'onChange',
     });
 
-    // Dark Mode Colors
-    const darkHeaderBg = '#21252b';
+    // Remove background colors, keep text colors
     const darkBorder = '#3e4451';
     const darkText = '#abb2bf';
 
     return (
-        <div className="w-full h-full flex flex-col" style={!isDark && themeBody ? { backgroundColor: themeBody } : {}}>
+        <div className="w-full h-full flex flex-col bg-transparent">
             <table className="w-full text-left border-collapse table-fixed">
                 <thead 
-                    className={`sticky top-0 z-20 backdrop-blur-md shadow-sm border-b ${isDark ? '' : (themeBody ? '' : 'bg-default-50/90')}`}
+                    className={`sticky top-0 z-20 backdrop-blur-md shadow-sm border-b bg-transparent`}
                     style={
                         isDark 
-                        ? { backgroundColor: darkHeaderBg, borderColor: darkBorder, color: darkText } 
-                        : (themeNav ? { backgroundColor: themeNav } : (themeBody ? { backgroundColor: themeBody, backgroundImage: 'linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.05))' } : {}))
+                        ? { borderColor: darkBorder, color: darkText } 
+                        : {}
                     }
                 >
                     {table.getHeaderGroups().map(headerGroup => (
@@ -266,7 +265,7 @@ export const EntityDetailsTable = ({
                                     className={`relative p-2 py-3 text-xs font-bold uppercase tracking-wider select-none group border-r transition-colors ${
                                         isDark 
                                         ? 'text-[#5c6370] border-[#3e4451] hover:bg-[#2c313a]' 
-                                        : `text-default-600 border-divider/10 ${themeBody ? 'hover:bg-black/5' : 'hover:bg-default-100'}`
+                                        : `text-default-600 border-divider/10 hover:bg-default-100`
                                     }`}
                                     style={{ width: header.getSize() }}
                                     draggable={!header.isPlaceholder}
@@ -330,8 +329,8 @@ export const EntityDetailsTable = ({
                             className={`
                                 border-b last:border-0 transition-colors
                                 ${isDark 
-                                    ? `border-[#3e4451] hover:bg-[#2c313a] ${idx % 2 === 0 ? 'bg-transparent' : 'bg-[#21252b]/30'}`
-                                    : `border-divider/40 ${themeBody ? 'hover:bg-black/5' : 'hover:bg-primary/5'} ${idx % 2 === 0 ? 'bg-transparent' : (themeBody ? 'bg-black/5' : 'bg-default-50/30')}`
+                                    ? `border-[#3e4451] hover:bg-[#2c313a] bg-transparent`
+                                    : `border-divider/40 hover:bg-default-100 bg-transparent`
                                 }
                             `}
                         >

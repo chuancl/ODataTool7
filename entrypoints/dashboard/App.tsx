@@ -93,10 +93,11 @@ const DashboardContent: React.FC = () => {
   const handleUrlChange = (val: string) => setUrl(val);
 
   return (
-      <div className={`text-foreground h-screen w-screen flex flex-col overflow-hidden font-sans antialiased ${isDark ? 'bg-background' : 'bg-[#D5F5E3]'}`}>
+      // 全局背景设定：暗黑模式使用 One Dark Pro 背景，亮色模式使用纯白
+      <div className={`text-foreground h-screen w-screen flex flex-col overflow-hidden font-sans antialiased ${isDark ? 'bg-[#282c34]' : 'bg-white'}`}>
         
-        {/* 顶部导航栏 */}
-        <nav className={`h-16 border-b border-divider px-6 flex items-center justify-between shrink-0 z-50 shadow-sm gap-4 ${isDark ? 'bg-content1' : 'bg-white/60 backdrop-blur-md'}`}>
+        {/* 顶部导航栏 - 透明背景 */}
+        <nav className={`h-16 border-b border-divider px-6 flex items-center justify-between shrink-0 z-50 shadow-sm gap-4 ${isDark ? 'bg-[#282c34]/80' : 'bg-white/80'} backdrop-blur-md`}>
           <div className="flex items-center gap-4 shrink-0">
             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent whitespace-nowrap">
               OData Master
@@ -118,7 +119,7 @@ const DashboardContent: React.FC = () => {
               startContent={<Search className="text-default-400" size={16} />}
               className="flex-1"
               classNames={{
-                inputWrapper: "bg-content2 hover:bg-content3 transition-colors group-data-[focus=true]:bg-content2"
+                inputWrapper: "bg-transparent border-divider hover:border-primary transition-colors"
               }}
             />
             <Button 
@@ -138,11 +139,11 @@ const DashboardContent: React.FC = () => {
           </Button>
         </nav>
 
-        {/* 主内容区域 */}
-        <main className={`flex-1 w-full h-full relative overflow-hidden p-2 md:p-4 ${isDark ? 'bg-content2/50' : 'bg-transparent'}`}>
+        {/* 主内容区域 - 透明背景 */}
+        <main className="flex-1 w-full h-full relative overflow-hidden p-2 md:p-4 bg-transparent">
           {!schema && !isValidating ? (
             <div className="flex flex-col items-center justify-center h-full text-default-400 gap-4">
-              <div className="w-20 h-20 bg-content3 rounded-full flex items-center justify-center mb-2 shadow-inner">
+              <div className="w-20 h-20 bg-default-100 rounded-full flex items-center justify-center mb-2 shadow-inner">
                 <Search size={32} className="opacity-50" />
               </div>
               <h2 className="text-xl font-semibold text-default-600">No OData Service Loaded</h2>
@@ -151,7 +152,7 @@ const DashboardContent: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className={`h-full w-full flex flex-col rounded-xl shadow-sm border border-divider overflow-hidden ${isDark ? 'bg-content1' : 'bg-white/80 backdrop-blur-sm'}`}>
+            <div className="h-full w-full flex flex-col rounded-xl border border-divider overflow-hidden bg-transparent">
                {/* 
                   Keep-Alive Strategy:
                   1. Tabs use onSelectionChange but render NO content directly (empty Tabs).
@@ -177,7 +178,7 @@ const DashboardContent: React.FC = () => {
               </Tabs>
 
               {/* Content Container */}
-              <div className={`flex-1 w-full h-full p-0 overflow-hidden relative ${isDark ? 'bg-content1' : 'bg-transparent'}`}>
+              <div className="flex-1 w-full h-full p-0 overflow-hidden relative bg-transparent">
                   {/* ER Diagram View */}
                   <div className="w-full h-full absolute inset-0" style={{ display: activeTab === 'er' ? 'block' : 'none', visibility: activeTab === 'er' ? 'visible' : 'hidden' }}>
                      <ODataERDiagram url={url} schema={schema} isLoading={isValidating} xmlContent={rawMetadataXml} isDark={isDark} />

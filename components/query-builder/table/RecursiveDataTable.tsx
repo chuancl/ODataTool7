@@ -324,45 +324,29 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
 
     // --- Row Style Logic ---
     const getRowStyle = (index: number, isSelected: boolean) => {
-        if (isDark) {
-            // --- One Dark Pro Mode ---
-            if (isSelected) {
-                // Selection: Dark Grey BG + Orange Border + White Text
-                return "bg-[#3e4451] text-[#ffffff] shadow-md z-10 scale-[1.01] font-semibold border-l-4 border-[#d19a66]";
-            }
-            
-            // Cyclic Border Colors for visual separation
-            const borderColors = [
-                'border-[#98c379]', // Green
-                'border-[#61afef]', // Blue
-                'border-[#c678dd]', // Purple
-                'border-[#56b6c2]', // Cyan
-            ];
-            
-            // Alternating Dark Backgrounds (#282c34 is main, #21252b is darker)
-            const bgClass = index % 2 === 0 ? 'bg-[#282c34]' : 'bg-[#21252b]';
-            
-            return `${bgClass} ${borderColors[index % 4]} text-[#abb2bf] border-l-4 hover:bg-[#2c313a] transition-colors`;
-        } else {
-            // --- Vibrant Light Mode ---
-            // 0: Green, 1: Blue, 2: Purple, 3: Cyan
-            const colors = [
-                'bg-emerald-200/80 hover:bg-emerald-300/80', // Green
-                'bg-blue-200/80 hover:bg-blue-300/80',       // Blue
-                'bg-purple-200/80 hover:bg-purple-300/80', // Purple
-                'bg-cyan-200/80 hover:bg-cyan-300/80',       // Cyan
-            ];
+        // 全局去色，背景透明
+        // 仅保留左侧 Border 作为层级/循环区分
+        
+        const borderColors = [
+            'border-[#98c379]', // Green
+            'border-[#61afef]', // Blue
+            'border-[#c678dd]', // Purple
+            'border-[#56b6c2]', // Cyan
+        ];
+        
+        const borderColor = borderColors[index % 4];
 
-            if (isSelected) {
-                return "bg-gradient-to-r from-orange-300 to-orange-200 text-orange-900 shadow-md z-10 scale-[1.01] font-semibold border-l-4 border-orange-600";
-            }
-
-            return `${colors[index % colors.length]} text-slate-700 border-l-4 border-transparent`;
+        if (isSelected) {
+            // Selected: Transparent BG, but Orange Border to highlight
+            return `bg-default-100/30 text-default-foreground font-semibold border-l-4 border-[#d19a66]`;
         }
+        
+        // Normal: Transparent BG, Colored Left Border
+        return `bg-transparent text-default-foreground border-l-4 ${borderColor} hover:bg-default-100/20 transition-colors`;
     };
 
     const tableContent = (
-        <div className={`flex flex-col h-full w-full gap-2 p-3 rounded-medium shadow-none overflow-hidden relative ${isDark ? 'bg-[#21252b]' : 'bg-content1'}`}>
+        <div className="flex flex-col h-full w-full gap-2 p-3 rounded-medium shadow-none overflow-hidden relative bg-transparent">
             <TableHeader 
                 isRoot={isRoot}
                 isEditing={isEditing}
@@ -377,7 +361,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                 hideUpdateButton={hideUpdateButton}
             />
 
-            <div className={`flex-1 w-full overflow-auto relative rounded-xl border scrollbar-thin scrollbar-thumb-default-300 ${isDark ? 'border-[#3e4451] bg-[#282c34]' : 'border-divider bg-content2/20'}`} ref={tableContainerRef}>
+            <div className={`flex-1 w-full overflow-auto relative rounded-xl border scrollbar-thin scrollbar-thumb-default-300 ${isDark ? 'border-[#3e4451]' : 'border-divider'}`} ref={tableContainerRef}>
                 <table 
                     className="min-w-full table-fixed border-separate border-spacing-y-3 px-2" // 增加行间距，实现卡片悬浮感
                     style={{ width: Math.max(table.getTotalSize(), containerWidth - 24) }}
@@ -390,7 +374,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                         key={header.id} 
                                         className={`
                                             backdrop-blur-md text-tiny font-bold uppercase px-4 py-3 text-left
-                                            ${isDark ? 'bg-[#21252b]/95 text-[#5c6370]' : 'bg-default-100/90 text-default-500'}
+                                            ${isDark ? 'bg-[#282c34]/90 text-[#5c6370]' : 'bg-white/90 text-default-500'}
                                             ${index === 0 ? 'rounded-l-xl' : ''}
                                             ${index === headerGroup.headers.length - 1 ? 'rounded-r-xl' : ''}
                                             relative group select-none whitespace-nowrap overflow-hidden
@@ -501,7 +485,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                     {row.getIsExpanded() && (
                                         <tr className="bg-transparent">
                                             <td colSpan={row.getVisibleCells().length} className="p-0 rounded-b-xl overflow-hidden shadow-sm">
-                                                <div className={`ml-4 rounded-b-xl overflow-hidden border-l-4 ${isSelected ? 'border-[#d19a66] bg-[#3e4451]/50' : (isDark ? 'border-[#5c6370] bg-[#282c34]/50' : 'border-default-300 bg-content2/50')}`}>
+                                                <div className={`ml-4 rounded-b-xl overflow-hidden border-l-4 ${isSelected ? 'border-[#d19a66] bg-transparent' : (isDark ? 'border-[#5c6370] bg-transparent' : 'border-default-300 bg-transparent')}`}>
                                                     <ExpandedRowView 
                                                         rowData={row.original} 
                                                         isDark={isDark} 

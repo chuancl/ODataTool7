@@ -25,12 +25,11 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
     isDark
 }) => {
     return (
-        // 亮色模式：bg-primary-50 (鲜艳填充)
-        // 暗黑模式：One Dark Pro 风格 (深色背景 + 边框)
+        // 使用 bg-transparent, 移除所有 bg 填充
         <div className={`flex items-center rounded-xl px-3 transition-colors h-14 w-full overflow-hidden relative shadow-sm ${
             isDark 
-                ? "bg-[#282c34] border border-[#3e4451] hover:bg-[#2c313a]" 
-                : "bg-primary-50 hover:bg-primary-100"
+                ? "bg-transparent border border-[#3e4451] hover:bg-[#2c313a]" 
+                : "bg-transparent border border-default-200 hover:bg-default-50"
         }`}>
             
             {/* 1. Filter Section (Flex Grow + min-w-0 to prevent overflow) */}
@@ -75,7 +74,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className={`w-px h-8 shrink-0 mr-3 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
+            <div className={`w-px h-8 shrink-0 mr-3 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
             {/* 2. Top Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
@@ -92,7 +91,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
+            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
             {/* 3. Skip Section (shrink-0) */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
@@ -109,7 +108,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </div>
 
             {/* Divider */}
-            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-primary-200/50"}`} />
+            <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
             {/* 4. Count Section (shrink-0) */}
             <div className="flex flex-col items-center justify-center h-full min-w-[50px] shrink-0">
