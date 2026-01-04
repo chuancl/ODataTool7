@@ -21,10 +21,8 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     setExpand,
     isDark
 }) => {
-    // 本地状态：控制下拉框中哪些节点是"视觉上"展开的 (用于查看下级)
     const [treeExpandedKeys, setTreeExpandedKeys] = useState<Set<string>>(new Set());
 
-    // 当主实体变化时 (currentSchema 变化), 重置视觉展开状态
     useEffect(() => {
         setTreeExpandedKeys(new Set());
     }, [currentSchema?.name]);
@@ -38,13 +36,9 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
         });
     };
 
-    // --- Expand 字段逻辑 (动态递归生成 + 按钮控制) ---
     const expandItems = useMemo(() => {
         if (!currentSchema || !schema) return [];
 
-        /**
-         * 递归构建 Expand 选项树
-         */
         const buildRecursive = (entity: EntityType, parentPath: string, level: number, ancestors: string[]): any[] => {
             const navs = entity.navigationProperties;
             if (!navs || navs.length === 0) return [];
@@ -53,14 +47,12 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
             const sortedNavs = [...navs].sort((a, b) => a.name.localeCompare(b.name));
 
             for (const nav of sortedNavs) {
-                // 1. 解析目标实体类型名称
                 let targetTypeName = nav.targetType;
                 if (targetTypeName?.startsWith('Collection(')) {
                     targetTypeName = targetTypeName.slice(11, -1);
                 }
                 targetTypeName = targetTypeName?.split('.').pop() || "";
 
-                // 2. 循环引用检测
                 if (ancestors.includes(targetTypeName)) {
                     continue; 
                 }
@@ -68,11 +60,9 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                 const currentPath = parentPath ? `${parentPath}/${nav.name}` : nav.name;
                 const nextEntity = schema.entities.find(e => e.name === targetTypeName);
                 
-                // 3. 检查是否有子节点 (用于决定是否显示展开按钮)
                 let hasChildren = false;
                 if (nextEntity && level < 10) {
                      const nextAncestors = [...ancestors, targetTypeName];
-                     // 预先检查下一级是否有合法的、不构成循环的导航属性
                      hasChildren = nextEntity.navigationProperties.some(n => {
                         let t = n.targetType;
                         if (t?.startsWith('Collection(')) t = t.slice(11, -1);
@@ -81,7 +71,6 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                      });
                 }
                 
-                // 4. 检查当前节点是否被用户展开了 (视觉展开)
                 const isTreeExpanded = treeExpandedKeys.has(currentPath);
 
                 result.push({
@@ -91,11 +80,10 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                     type: 'nav',
                     targetType: nav.targetType,
                     level: level,
-                    hasChildren,        // 是否显示箭头
-                    isTreeExpanded      // 箭头方向
+                    hasChildren,
+                    isTreeExpanded
                 });
 
-                // 5. 递归下钻逻辑 (基于 treeExpandedKeys)
                 if (hasChildren && isTreeExpanded && nextEntity) {
                      const nextAncestors = [...ancestors, targetTypeName];
                      const children = buildRecursive(nextEntity, currentPath, level + 1, nextAncestors);
@@ -125,25 +113,24 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     };
 
     const commonClassNames = {
-        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#e5c07b] data-[focus=true]:border-[#e5c07b]' : ''}`,
-        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
-        value: `text-small ${isDark ? 'text-[#e5c07b]' : ''}`,
-        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+        trigger: `h-14 min-h-14 bg-transparent border-small border-default-200 data-[hover=true]:border-warning data-[focus=true]:border-warning shadow-none`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'text-default-500'}`,
+        value: `text-small ${isDark ? 'text-[#e5c07b]' : 'text-foreground'}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : 'bg-[#D5F5E3] border border-success-200'
     };
 
     if (!currentSchema) {
-        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
+        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant="bordered" classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
     }
 
     return (
-        // 使用 Warning 色调 (橙黄色)
         <Select
             label="展开 ($expand)"
             placeholder="选择关联实体"
             selectionMode="multiple"
             selectedKeys={currentExpandKeys}
             onSelectionChange={handleExpandChange}
-            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
+            variant="bordered"
             color="warning" 
             classNames={commonClassNames}
             items={expandItems}
@@ -158,14 +145,12 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                     <SelectItem key={item.name} value={item.name} textValue={item.name}>
                         <div className="flex flex-col" style={{ paddingLeft: indent }}>
                             <div className="flex items-center gap-1">
-                                {/* 独立的展开按钮 */}
                                 {item.hasChildren ? (
                                     <div 
                                         role="button"
                                         className={`p-0.5 rounded cursor-pointer z-50 flex items-center justify-center transition-colors ${
                                             isDark ? "text-[#5c6370] hover:text-[#abb2bf] hover:bg-[#3e4451]" : "hover:bg-default-200 text-default-500"
                                         }`}
-                                        // 阻止所有可能触发选中的事件冒泡
                                         onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                         onPointerUp={(e) => { e.stopPropagation(); e.preventDefault(); }}
                                         onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
@@ -178,7 +163,7 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
                                         {item.isTreeExpanded ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
                                     </div>
                                 ) : (
-                                    <div className="w-[18px]" /> // 占位符，保持对齐
+                                    <div className="w-[18px]" />
                                 )}
 
                                 <div className="flex flex-col">

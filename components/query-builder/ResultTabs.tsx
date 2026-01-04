@@ -91,7 +91,7 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
     };
 
     return (
-        <div className="flex-1 min-h-0 bg-content1 rounded-xl border border-divider overflow-hidden flex flex-col shadow-sm">
+        <div className={`flex-1 min-h-0 rounded-xl border overflow-hidden flex flex-col shadow-sm bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
             {/* Navigation Tabs (Controller) */}
             <Tabs
                 aria-label="Result Options"
@@ -100,7 +100,7 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
                 selectedKey={activeTab}
                 onSelectionChange={(k) => setActiveTab(k as string)}
                 classNames={{
-                    tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider px-4 bg-default-100",
+                    tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider px-4 bg-transparent",
                     cursor: "w-full bg-primary",
                     tab: "max-w-fit px-2 h-10 text-sm",
                     tabContent: "group-data-[selected=true]:font-bold",
@@ -154,7 +154,7 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
 
                 {/* 2. JSON Preview */}
                 <div className="absolute inset-0 flex flex-col" style={{ display: activeTab === 'json' ? 'flex' : 'none', visibility: activeTab === 'json' ? 'visible' : 'hidden' }}>
-                    <div className="p-2 border-b border-divider flex justify-between items-center shrink-0 bg-content2">
+                    <div className={`p-2 border-b border-divider flex justify-between items-center shrink-0 ${isDark ? 'bg-[#21252b]' : 'bg-transparent'}`}>
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold px-2 text-warning-500">
                                 {enableJsonEdit ? "JSON 编辑 (Blur to Sync)" : "JSON 响应结果"}
@@ -198,7 +198,7 @@ export const ResultTabs: React.FC<ResultTabsProps> = ({
                 {/* 3. XML Preview */}
                 {!hideXmlTab && (
                     <div className="absolute inset-0 flex flex-col" style={{ display: activeTab === 'xml' ? 'flex' : 'none', visibility: activeTab === 'xml' ? 'visible' : 'hidden' }}>
-                        <div className="p-2 border-b border-divider flex justify-between items-center shrink-0 bg-content2">
+                        <div className={`p-2 border-b border-divider flex justify-between items-center shrink-0 ${isDark ? 'bg-[#21252b]' : 'bg-transparent'}`}>
                             <span className="text-xs font-bold px-2 text-primary-500">XML / Atom 响应结果</span>
                             <div className="flex gap-1">
                                 <Button isIconOnly size="sm" variant="light" onPress={() => downloadFile(rawXmlResult, 'result.xml', 'xml')} title="导出 XML">

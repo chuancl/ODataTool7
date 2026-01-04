@@ -33,19 +33,13 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
   const [entitySets, setEntitySets] = useState<string[]>([]);
   const [selectedEntity, setSelectedEntity] = useState<string>('');
   
-  // 扁平化后的属性列表 (包含 path, property)
   const [flatProperties, setFlatProperties] = useState<{ path: string, property: any }[]>([]);
-  
-  // 配置状态: Map<Path, Config>
   const [configs, setConfigs] = useState<Record<string, MockFieldConfig>>({});
-  
-  // 数据状态
   const [mockData, setMockData] = useState<any[]>([]);
   const [currentDraft, setCurrentDraft] = useState<Record<number, Record<string, any>>>({});
 
   const toast = useToast();
 
-  // 1. 初始化实体列表
   useEffect(() => {
     if (!schema) return;
     let sets: string[] = [];
@@ -58,7 +52,6 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
     if (sets.length > 0) setSelectedEntity(sets[0]);
   }, [schema]);
 
-  // 2. 获取当前选中实体的 Schema 定义并初始化配置
   const currentSchema = useMemo(() => {
       if (!selectedEntity || !schema || !schema.entities) return null;
       const setInfo = schema.entitySets.find(es => es.name === selectedEntity);
@@ -72,7 +65,6 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
       return entityType || null;
   }, [selectedEntity, schema]);
 
-  // 辅助函数：生成默认配置
   const generateDefaultConfigs = useCallback((props: { path: string, property: any }[]) => {
       const newConfigs: Record<string, MockFieldConfig> = {};
       props.forEach(item => {
@@ -80,25 +72,21 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
               path: item.path,
               property: item.property,
               strategy: suggestStrategy(item.property),
-              incrementConfig: { start: 1, step: 1, prefix: '', suffix: '' } // default
+              incrementConfig: { start: 1, step: 1, prefix: '', suffix: '' } 
           };
       });
       return newConfigs;
   }, []);
 
-  // 3. 当 Schema 变化时，重新扁平化并生成默认配置
   useEffect(() => {
       if (!currentSchema || !schema) return;
-      
       const flattened = flattenEntityProperties(currentSchema, schema);
       setFlatProperties(flattened);
       setConfigs(generateDefaultConfigs(flattened));
-      
       setMockData([]);
       setCurrentDraft({});
   }, [currentSchema, schema, generateDefaultConfigs]);
 
-  // 4. 更新配置的 Helper
   const updateConfig = (path: string, updates: Partial<MockFieldConfig>) => {
       setConfigs(prev => ({
           ...prev,
@@ -119,27 +107,19 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
       }));
   };
 
-  // 重置配置
   const handleResetDefaults = () => {
       if (flatProperties.length === 0) return;
       setConfigs(generateDefaultConfigs(flatProperties));
       toast.success("已重置所有字段为默认生成策略 (Reset to defaults)");
   };
 
-  // 5. 生成数据核心逻辑
   const generateData = () => {
     if (!currentSchema) return;
     const num = parseInt(count) || 5;
-    
     const newData = Array.from({ length: num }).map((_, i) => {
-      // Change 'id' to '__id' to mark it as internal field
       const row: any = { __id: i, __selected: true };
-      
-      // 遍历所有扁平化配置，构建嵌套对象
       Object.values(configs).forEach(conf => {
           const val = generateValue(conf.strategy, conf.property, i, conf.incrementConfig);
-          
-          // 处理嵌套路径 "Address.City" -> row.Address.City
           const parts = conf.path.split('.');
           let current = row;
           for (let k = 0; k < parts.length - 1; k++) {
@@ -149,16 +129,13 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
           }
           current[parts[parts.length - 1]] = val;
       });
-      
       return row;
     });
-    
     setMockData(newData);
     setCurrentDraft({});
     toast.success(`Generated ${num} rows of data`);
   };
 
-  // 6. Action Hook 集成
   const { 
       prepareCreate, 
       isOpen: isModalOpen, 
@@ -167,19 +144,11 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
       modalAction, 
       executeBatch 
   } = useEntityActions(
-      url, 
-      version, 
-      schema, 
-      selectedEntity, 
-      currentSchema, 
-      async () => {},
-      () => {}, 
-      () => {}
+      url, version, schema, selectedEntity, currentSchema, 
+      async () => {}, () => {}, () => {}
   );
 
-  const handleCreateSelected = (selectedItems: any[]) => {
-      prepareCreate(selectedItems);
-  };
+  const handleCreateSelected = (selectedItems: any[]) => prepareCreate(selectedItems);
 
   const downloadJson = (content: string, filename: string, type: 'json' | 'xml') => {
       const blob = new Blob([content], { type: type === 'json' ? 'application/json' : 'application/xml' });
@@ -207,32 +176,32 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
       setCurrentDraft({});
   };
 
-  // One Dark Pro Input Styles
   const inputClassNames = isDark ? {
       input: "text-xs",
-      inputWrapper: "bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#61afef] group-data-[focus=true]:border-[#61afef]"
-  } : {};
+      inputWrapper: "bg-transparent border-[#3e4451] data-[hover=true]:border-[#61afef] group-data-[focus=true]:border-[#61afef]"
+  } : {
+      input: "text-xs",
+      inputWrapper: "bg-transparent border-default-200"
+  };
 
   return (
     <div className="flex flex-col gap-4 h-full relative">
-      {/* 顶部控制栏 */}
-      <Card className={`border shadow-sm shrink-0 ${isDark ? 'bg-[#21252b] border-[#3e4451]' : 'bg-content1 border-none'}`}>
+      <Card className={`border shadow-sm shrink-0 bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
         <CardBody className="p-3">
            <div className="flex flex-col md:flex-row gap-4 items-end justify-between">
               <div className="flex items-center gap-4 flex-1 w-full">
-                {/* 使用 Primary 色调，暗黑模式切换为 Bordered + Dark BG */}
                 <Select 
                     label="Target Entity" 
                     size="sm" 
-                    variant={isDark ? "bordered" : "flat"}
+                    variant="bordered"
                     color="primary" 
                     className="max-w-[240px]"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onChange={(e) => setSelectedEntity(e.target.value)}
-                    classNames={isDark ? { 
-                        trigger: "bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#61afef] data-[focus=true]:border-[#61afef]",
-                        popoverContent: "bg-[#282c34] border border-[#3e4451]"
-                    } : {}}
+                    classNames={{ 
+                        trigger: `bg-transparent ${isDark ? "border-[#3e4451]" : "border-default-200"}`,
+                        popoverContent: isDark ? "bg-[#282c34] border border-[#3e4451]" : "bg-[#D5F5E3] border border-success-200"
+                    }}
                 >
                     {entitySets.map(es => <SelectItem key={es} value={es}>{es}</SelectItem>)}
                 </Select>
@@ -242,7 +211,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                     value={count} 
                     onValueChange={setCount} 
                     className="max-w-[100px]" 
-                    variant={isDark ? "bordered" : "flat"}
+                    variant="bordered"
                     color="primary"
                     size="sm"
                     classNames={inputClassNames}
@@ -256,8 +225,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
       </Card>
 
       <div className="flex gap-4 flex-1 min-h-0">
-          {/* 左侧：配置面板 */}
-          <div className={`w-[320px] rounded-xl border flex flex-col shrink-0 ${isDark ? 'bg-[#21252b] border-[#3e4451]' : 'bg-content1 border-divider'}`}>
+          <div className={`w-[320px] rounded-xl border flex flex-col shrink-0 bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
              <div className={`p-3 border-b font-bold text-sm flex items-center gap-2 ${isDark ? 'border-[#3e4451] text-[#abb2bf]' : 'border-divider text-default-600'}`}>
                  <Settings2 size={16} /> Field Configuration
              </div>
@@ -280,14 +248,13 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                                             {fp.property.nullable === false && <span className="text-danger ml-1">*</span>}
                                         </label>
                                         <div className="flex items-center gap-1">
-                                            <span className={`text-[9px] font-mono px-1 rounded ${isDark ? 'text-[#5c6370] bg-[#282c34]' : 'text-default-400 bg-default-100'}`}>
+                                            <span className={`text-[9px] font-mono px-1 rounded ${isDark ? 'text-[#5c6370] bg-[#282c34]' : 'text-default-400 bg-transparent border border-default-200'}`}>
                                                 {fp.property.type.split('.').pop()}
                                             </span>
                                             {!isCompatible && <AlertTriangle size={10} className="text-warning" />}
                                         </div>
                                     </div>
                                     
-                                    {/* New Strategy Selector Component */}
                                     <StrategySelect 
                                         value={conf.strategy}
                                         odataType={fp.property.type}
@@ -296,34 +263,32 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                                         isDark={isDark}
                                     />
 
-                                    {/* Auto-Increment Settings - Always visible for 'custom.increment' */}
-                                    {/* Inputs use Primary Color */}
                                     {conf.strategy === 'custom.increment' && (
-                                        <div className={`grid grid-cols-2 gap-2 mt-1 p-2 rounded border ${isDark ? 'bg-[#282c34] border-[#3e4451]' : 'bg-default-50 border-divider'}`}>
+                                        <div className={`grid grid-cols-2 gap-2 mt-1 p-2 rounded border bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
                                             <Input 
                                                 label="Start" size="sm" type="number" 
-                                                variant={isDark ? "bordered" : "flat"} color="primary"
+                                                variant="bordered" color="primary"
                                                 classNames={isDark ? { input: "text-[10px]", label: "text-[9px]", inputWrapper: inputClassNames.inputWrapper } : { input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.start)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'start', Number(v))}
                                             />
                                             <Input 
                                                 label="Step" size="sm" type="number" 
-                                                variant={isDark ? "bordered" : "flat"} color="primary"
+                                                variant="bordered" color="primary"
                                                 classNames={isDark ? { input: "text-[10px]", label: "text-[9px]", inputWrapper: inputClassNames.inputWrapper } : { input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.step)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'step', Number(v))}
                                             />
                                             <Input 
                                                 label="Prefix" size="sm" 
-                                                variant={isDark ? "bordered" : "flat"} color="primary"
+                                                variant="bordered" color="primary"
                                                 classNames={isDark ? { input: "text-[10px]", label: "text-[9px]", inputWrapper: inputClassNames.inputWrapper } : { input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.prefix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'prefix', v)}
                                             />
                                             <Input 
                                                 label="Suffix" size="sm" 
-                                                variant={isDark ? "bordered" : "flat"} color="primary"
+                                                variant="bordered" color="primary"
                                                 classNames={isDark ? { input: "text-[10px]", label: "text-[9px]", inputWrapper: inputClassNames.inputWrapper } : { input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.suffix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'suffix', v)}
@@ -344,7 +309,6 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
              </div>
           </div>
 
-          {/* 右侧：结果 */}
           <ResultTabs 
              queryResult={mockData}
              rawJsonResult={mergedJson}

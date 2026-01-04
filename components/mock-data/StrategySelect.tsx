@@ -16,7 +16,7 @@ interface StrategySelectProps {
     onChange: (value: string) => void;
     odataType: string;
     label?: string;
-    isDark?: boolean; // 新增
+    isDark?: boolean; 
 }
 
 interface FlatItem {
@@ -27,13 +27,12 @@ interface FlatItem {
     isCompatible: boolean;
     level: number;
     isExpanded?: boolean;
-    strategy?: MockStrategy; // 为了获取 fakerModule/Method
+    strategy?: MockStrategy; 
 }
 
 export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange, odataType, label, isDark }) => {
     const selectedStrategy = useMemo(() => ALL_STRATEGIES.find(s => s.value === value), [value]);
 
-    // 优化：默认仅展开 Custom 和当前选中项所属的分类。移除 'Person' 默认展开以减少列表长度，帮助准确定位。
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(() => {
         const defaults = new Set(['Custom (自定义)']);
         if (selectedStrategy) {
@@ -42,7 +41,6 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
         return defaults;
     });
 
-    // 当 value 变化时（例如重置或自动匹配），同步更新 expandedCategories 状态
     useEffect(() => {
         if (selectedStrategy && !expandedCategories.has(selectedStrategy.category)) {
             setExpandedCategories(prev => {
@@ -51,15 +49,12 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                 return next;
             });
         }
-    }, [selectedStrategy]); // 依赖 selectedStrategy 对象引用变化
+    }, [selectedStrategy]); 
 
     const grouped = useMemo(() => getGroupedStrategies(), []);
     
-    // 构造扁平化列表 (用于 Select items)
     const flatItems = useMemo(() => {
         const items: FlatItem[] = [];
-        
-        // 排序 Categories (Custom first, then alphabetical)
         const categories = Object.keys(grouped).sort((a, b) => {
             if (a.startsWith('Custom')) return -1;
             if (b.startsWith('Custom')) return 1;
@@ -67,8 +62,6 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
         });
 
         categories.forEach(cat => {
-            // 关键修正：如果当前选中的策略属于该分类，强制视为展开。
-            // 这样能保证在 Select 初次渲染时，选中的 Item 一定存在于列表中，从而让 NextUI 正确计算 Scroll 位置。
             const isSelectedCategory = selectedStrategy?.category === cat;
             const isExpanded = expandedCategories.has(cat) || isSelectedCategory;
 
@@ -102,15 +95,12 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
 
     const isCurrentCompatible = selectedStrategy ? isStrategyCompatible(value, odataType) : true;
 
-    // Memoize selected keys specifically to ensure stability for NextUI
     const selectedKeys = useMemo(() => {
         return selectedStrategy ? new Set([selectedStrategy.value]) : new Set([]);
     }, [selectedStrategy]);
 
     const toggleCategory = (catName: string) => {
-        // 如果该分类包含当前选中项，则不允许折叠 (保持可见性)
         if (selectedStrategy?.category === catName) return;
-
         setExpandedCategories(prev => {
             const next = new Set(prev);
             if (next.has(catName)) next.delete(catName);
@@ -120,17 +110,16 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
     };
 
     const commonClassNames = {
-        trigger: `h-8 min-h-8 px-2 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#c678dd] data-[focus=true]:border-[#c678dd]' : ''}`,
+        trigger: `h-8 min-h-8 px-2 bg-transparent border-small border-default-200 data-[hover=true]:border-secondary data-[focus=true]:border-secondary shadow-none`,
         value: `text-[11px] ${!isCurrentCompatible ? 'text-warning-600 font-medium' : ''} ${isDark ? 'text-[#c678dd]' : ''}`,
-        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : 'bg-[#D5F5E3] border border-success-200'
     };
 
     return (
-        // 使用 Secondary 色调 (紫粉色)
         <Select 
             aria-label={label || "Select Strategy"}
             size="sm" 
-            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
+            variant="bordered"
             color="secondary" 
             selectedKeys={selectedKeys}
             onSelectionChange={(keys) => {
@@ -154,9 +143,7 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
         >
             {(item) => {
                 if (item.type === 'category') {
-                    // 如果该分类包含当前选中项，禁用折叠交互样式
                     const isForcedOpen = selectedStrategy?.category === item.label;
-
                     return (
                         <SelectItem 
                             key={item.key} 
@@ -164,7 +151,7 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                             className={`font-bold sticky top-0 z-10 p-0 rounded-none border-b outline-none ${
                                 isDark 
                                 ? "text-[#5c6370] bg-[#21252b] border-[#3e4451] data-[hover=true]:bg-[#2c313a]" 
-                                : "text-default-600 bg-default-50 border-divider/50 data-[hover=true]:bg-default-100"
+                                : "text-default-600 bg-transparent border-divider/50 data-[hover=true]:bg-black/5"
                             }`}
                             isReadOnly
                         >
@@ -177,7 +164,6 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                                 }}
                             >
                                 <div className={isDark ? "text-[#5c6370]" : "text-default-400"}>
-                                    {/* 如果强制展开，显示固定图标或不显示折叠状态 */}
                                     {item.isExpanded ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
                                 </div>
                                 <span className="text-[11px] uppercase tracking-wider select-none">{item.label}</span>
@@ -187,7 +173,6 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
                     );
                 }
                 
-                // 构建 Tooltip 内容
                 const tooltipContent = item.strategy?.type === 'faker' 
                     ? `faker.${item.strategy.fakerModule}.${item.strategy.fakerMethod}()`
                     : (item.strategy?.type === 'custom.increment' 

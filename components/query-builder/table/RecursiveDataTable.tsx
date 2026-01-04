@@ -324,8 +324,6 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
 
     // --- Row Style Logic ---
     const getRowStyle = (index: number, isSelected: boolean) => {
-        // 全局去色，背景透明
-        // 仅保留左侧 Border 作为层级/循环区分
         
         const borderColors = [
             'border-[#98c379]', // Green
@@ -374,7 +372,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                         key={header.id} 
                                         className={`
                                             backdrop-blur-md text-tiny font-bold uppercase px-4 py-3 text-left
-                                            ${isDark ? 'bg-[#282c34]/90 text-[#5c6370]' : 'bg-white/90 text-default-500'}
+                                            ${isDark ? 'bg-[#282c34]/90 text-[#5c6370]' : 'bg-[#D5F5E3]/90 text-default-500'}
                                             ${index === 0 ? 'rounded-l-xl' : ''}
                                             ${index === headerGroup.headers.length - 1 ? 'rounded-r-xl' : ''}
                                             relative group select-none whitespace-nowrap overflow-hidden

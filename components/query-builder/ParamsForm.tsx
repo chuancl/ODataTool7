@@ -104,39 +104,34 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
         return extraProps;
     }, [expand, currentSchema, schema]);
 
-    // One Dark Pro Theme Styles for Select
+    // Transparent styles for triggers, colored backgrounds for popovers
     const selectClassNames = {
-        trigger: `h-14 min-h-14 ${isDark ? 'bg-transparent border-[#3e4451] data-[hover=true]:border-[#61afef] data-[focus=true]:border-[#61afef]' : ''}`, 
-        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
-        value: `text-small font-bold ${isDark ? 'text-[#61afef]' : ''}`,
-        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+        trigger: `h-14 min-h-14 bg-transparent border-small border-default-200 data-[hover=true]:border-primary data-[focus=true]:border-primary shadow-none`, 
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'text-default-500'}`,
+        value: `text-small font-bold ${isDark ? 'text-[#61afef]' : 'text-foreground'}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : 'bg-[#D5F5E3] border border-success-200'
     };
 
     return (
-        <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl shadow-sm border shrink-0 bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
-            {/* Filter Modal Component */}
+        <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 p-4 rounded-xl border shrink-0 bg-transparent ${isDark ? 'border-[#3e4451]' : 'border-divider'}`}>
             <FilterBuilderModal 
                 isOpen={isFilterModalOpen}
                 onClose={() => setIsFilterModalOpen(false)}
                 currentFilter={filter}
                 onApply={setFilter}
                 currentSchema={currentSchema}
-                expandedProperties={expandedEntityProperties} // 传递扩展属性
+                expandedProperties={expandedEntityProperties} 
             />
 
             {/* --- 左侧控制面板 (实体, 过滤, 分页) [col-span-3] --- */}
-            {/* 使用 gap-4 以匹配右侧 grid gap */}
             <div className="md:col-span-3 flex flex-col gap-4">
-                {/* 1. 实体集选择 - 使用 Primary 色调 */}
                 <Select
                     label="实体集 (Entity Set)"
                     placeholder="选择实体"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onSelectionChange={onEntityChange}
-                    variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
+                    variant="bordered"
                     color="primary"
-                    // 移除 size="sm" 以使用默认高度 (通常也是 h-14 左右，与我们的 Toolbar 对齐)
-                    // 或者显式设置高度 class
                     className="w-full"
                     classNames={selectClassNames}
                     items={entitySets.map(e => ({ key: e, label: e }))}
@@ -145,10 +140,6 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     {(item) => <SelectItem key={item.key} value={item.key}>{item.label}</SelectItem>}
                 </Select>
 
-                {/* 2. 组合工具栏：过滤 + 分页 + 计数 */}
-                {/* 
-                    这个组件内部高度设置为 h-14 (56px)，与上面的 Select 对齐。
-                */}
                 <PaginationControls 
                     filter={filter}
                     onOpenFilter={() => setIsFilterModalOpen(true)}
@@ -161,10 +152,8 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
             </div>
 
             {/* --- 右侧配置面板 (排序, 字段, 展开) [col-span-9] --- */}
-            {/* 使用 grid-cols-2 实现 2x2 布局: Row 1 (Sort), Row 2 (Select/Expand) */}
             <div className="md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-4 h-full content-start">
                 
-                {/* 3. 排序 ($orderby) - 自动占 2 个格子 (SortFields 内部有两个 Select) */}
                 <SortFields 
                     currentSchema={currentSchema}
                     expandedProperties={expandedEntityProperties}
@@ -173,7 +162,6 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     isDark={isDark}
                 />
 
-                {/* 4. 字段选择 ($select) */}
                 <SelectFields 
                     currentSchema={currentSchema}
                     expandedProperties={expandedEntityProperties}
@@ -182,7 +170,6 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     isDark={isDark}
                 />
 
-                {/* 5. 展开关联 ($expand) */}
                 <ExpandSelect 
                     currentSchema={currentSchema}
                     schema={schema}

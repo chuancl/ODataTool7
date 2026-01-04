@@ -27,7 +27,6 @@ export const SortFields: React.FC<SortFieldsProps> = ({
     setSortItems,
     isDark
 }) => {
-    // --- Sort 字段逻辑 ---
     const sortOptions = useMemo(() => {
         if (!currentSchema) return [];
         const mainProps = currentSchema.properties.map(p => ({ ...p, label: p.name, isExpanded: false }));
@@ -73,24 +72,23 @@ export const SortFields: React.FC<SortFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#c678dd] data-[focus=true]:border-[#c678dd]' : ''}`,
-        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
-        value: `text-small ${isDark ? 'text-[#c678dd]' : ''}`,
-        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+        trigger: `h-14 min-h-14 bg-transparent border-small border-default-200 data-[hover=true]:border-secondary data-[focus=true]:border-secondary shadow-none`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'text-default-500'}`,
+        value: `text-small ${isDark ? 'text-[#c678dd]' : 'text-foreground'}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : 'bg-[#D5F5E3] border border-success-200'
     };
 
     if (!currentSchema) {
         return (
             <>
-                <Input isDisabled label="升序" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
-                <Input isDisabled label="降序" placeholder="需先选择实体" variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="升序" placeholder="需先选择实体" variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="降序" placeholder="需先选择实体" variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
             </>
         );
     }
 
     return (
         <>
-            {/* 排序 - 升序 (Secondary) */}
             <Select
                 label="升序 (Ascending)"
                 placeholder="选择升序字段"
@@ -98,7 +96,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentAscKeys}
                 onSelectionChange={handleAscChange}
                 disabledKeys={Array.from(currentDescKeys)} 
-                variant={isDark ? "bordered" : "flat"} // 暗黑模式用 Bordered
+                variant="bordered"
                 color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}
@@ -117,7 +115,6 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 )}
             </Select>
 
-            {/* 排序 - 降序 (Secondary) */}
             <Select
                 label="降序 (Descending)"
                 placeholder="选择降序字段"
@@ -125,7 +122,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentDescKeys}
                 onSelectionChange={handleDescChange}
                 disabledKeys={Array.from(currentAscKeys)} 
-                variant={isDark ? "bordered" : "flat"}
+                variant="bordered"
                 color="secondary"
                 classNames={commonClassNames}
                 items={sortOptions}

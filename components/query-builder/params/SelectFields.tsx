@@ -24,7 +24,6 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
 }) => {
     const ALL_KEY = '_ALL_';
 
-    // --- Select 字段逻辑 ---
     const selectItems = useMemo(() => {
         if (!currentSchema) return [];
         const mainProps = currentSchema.properties.map(p => ({ ...p, label: p.name, isExpanded: false }));
@@ -76,25 +75,24 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: `h-14 min-h-14 ${isDark ? 'bg-[#282c34] border-[#3e4451] data-[hover=true]:border-[#98c379] data-[focus=true]:border-[#98c379]' : ''}`,
-        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'opacity-70'}`,
-        value: `text-small ${isDark ? 'text-[#98c379]' : ''}`,
-        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : ''
+        trigger: `h-14 min-h-14 bg-transparent border-small border-default-200 data-[hover=true]:border-success data-[focus=true]:border-success shadow-none`,
+        label: `text-[10px] font-medium ${isDark ? 'text-[#5c6370]' : 'text-default-500'}`,
+        value: `text-small ${isDark ? 'text-[#98c379]' : 'text-foreground'}`,
+        popoverContent: isDark ? 'bg-[#282c34] border border-[#3e4451]' : 'bg-[#D5F5E3] border border-success-200'
     };
 
     if (!currentSchema) {
-        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant={isDark ? "bordered" : "flat"} classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
+        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
     }
 
     return (
-        // 使用 Success 色调 (绿色)
         <Select
             label="字段 ($select)"
             placeholder="选择返回字段"
             selectionMode="multiple"
             selectedKeys={currentSelectKeys}
             onSelectionChange={handleSelectChange}
-            variant={isDark ? "bordered" : "flat"} // 暗黑模式使用 Bordered
+            variant="bordered"
             color="success" 
             classNames={commonClassNames}
             items={selectItems}

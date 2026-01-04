@@ -25,14 +25,13 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
     isDark
 }) => {
     return (
-        // 使用 bg-transparent, 移除所有 bg 填充
         <div className={`flex items-center rounded-xl px-3 transition-colors h-14 w-full overflow-hidden relative shadow-sm ${
             isDark 
                 ? "bg-transparent border border-[#3e4451] hover:bg-[#2c313a]" 
-                : "bg-transparent border border-default-200 hover:bg-default-50"
+                : "bg-transparent border border-default-200 hover:bg-black/5"
         }`}>
             
-            {/* 1. Filter Section (Flex Grow + min-w-0 to prevent overflow) */}
+            {/* 1. Filter Section */}
             <div 
                 className="flex-1 min-w-0 flex flex-col justify-center h-full cursor-pointer group pr-2 mr-2 relative"
                 onClick={onOpenFilter}
@@ -49,11 +48,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                     {filter ? (
                         <div className="flex items-center gap-1 w-full">
                             <Filter size={14} className={isDark ? "text-[#61afef]" : "text-primary"} />
-                            {/* flex-1 + truncate ensures text takes available space but doesn't push others */}
                             <span className={`truncate font-mono text-xs flex-1 ${isDark ? "text-[#98c379]" : "text-foreground"}`} title={filter}>
                                 {filter}
                             </span>
-                            {/* Clear Button */}
                             <div 
                                 role="button"
                                 className={`p-1 z-10 shrink-0 ${isDark ? "text-[#5c6370] hover:text-[#e06c75]" : "text-default-400 hover:text-danger"}`}
@@ -73,10 +70,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 </div>
             </div>
 
-            {/* Divider */}
             <div className={`w-px h-8 shrink-0 mr-3 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
-            {/* 2. Top Section (shrink-0) */}
+            {/* 2. Top Section */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
                 <label htmlFor="input-top" className={`text-[10px] font-medium cursor-text w-full text-center ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Top</label>
                 <input 
@@ -90,10 +86,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 />
             </div>
 
-            {/* Divider */}
             <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
-            {/* 3. Skip Section (shrink-0) */}
+            {/* 3. Skip Section */}
             <div className="flex flex-col w-12 items-center justify-center h-full mr-1 shrink-0">
                 <label htmlFor="input-skip" className={`text-[10px] font-medium cursor-text w-full text-center ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Skip</label>
                 <input 
@@ -107,10 +102,9 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 />
             </div>
 
-            {/* Divider */}
             <div className={`w-px h-8 shrink-0 mx-2 ${isDark ? "bg-[#3e4451]" : "bg-default-200"}`} />
 
-            {/* 4. Count Section (shrink-0) */}
+            {/* 4. Count Section */}
             <div className="flex flex-col items-center justify-center h-full min-w-[50px] shrink-0">
                  <span className={`text-[10px] font-medium mb-1 ${isDark ? "text-[#5c6370]" : "text-default-500"}`}>Count</span>
                  <Switch 
