@@ -322,6 +322,26 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         unregister: (id) => { registryRef.current.delete(id); }
     }), []);
 
+    // --- Color Logic for HeroUI Style ---
+    const getRowStyle = (index: number, isSelected: boolean) => {
+        // HeroUI / Reference Image Color Palette
+        // 0: Green, 1: Blue, 2: Purple, 3: Cyan
+        const colors = [
+            'bg-success-50/60 dark:bg-success-900/20 hover:bg-success-100/80',
+            'bg-primary-50/60 dark:bg-primary-900/20 hover:bg-primary-100/80',
+            'bg-secondary-50/60 dark:bg-secondary-900/20 hover:bg-secondary-100/80',
+            'bg-cyan-50/60 dark:bg-cyan-900/20 hover:bg-cyan-100/80',
+        ];
+
+        // 选中状态：使用醒目的橙色/Warning，类似参考图
+        if (isSelected) {
+            return "bg-gradient-to-r from-warning-100 to-warning-50 dark:from-warning-900/40 dark:to-warning-900/20 hover:from-warning-200 hover:to-warning-100 shadow-md transform scale-[1.002] z-10 border-l-4 border-warning-500";
+        }
+
+        // 默认循环颜色
+        return `${colors[index % colors.length]} border-l-4 border-transparent`;
+    };
+
     const tableContent = (
         <div className="flex flex-col h-full w-full gap-2 p-3 bg-content1 rounded-medium shadow-none overflow-hidden relative">
             <TableHeader 
@@ -340,7 +360,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
 
             <div className="flex-1 w-full overflow-auto relative rounded-lg border border-divider scrollbar-thin scrollbar-thumb-default-300" ref={tableContainerRef}>
                 <table 
-                    className="min-w-full table-fixed border-separate border-spacing-0"
+                    className="min-w-full table-fixed border-separate border-spacing-y-2" // Important: border-separate for card effect
                     style={{ width: Math.max(table.getTotalSize(), containerWidth - 24) }}
                 >
                     <thead className="sticky top-0 z-20 shadow-sm [&>tr]:first:rounded-lg">
@@ -351,9 +371,9 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                         key={header.id} 
                                         className={`
                                             bg-default-100 text-default-500 text-tiny font-bold uppercase px-3 py-2 text-left
-                                            border-b border-divider
-                                            ${index === 0 ? 'rounded-tl-lg rounded-bl-lg' : ''}
-                                            ${index === headerGroup.headers.length - 1 ? 'rounded-tr-lg rounded-br-lg' : ''}
+                                            border-b border-divider/50
+                                            ${index === 0 ? 'rounded-l-lg' : ''}
+                                            ${index === headerGroup.headers.length - 1 ? 'rounded-r-lg' : ''}
                                             relative group select-none whitespace-nowrap overflow-hidden
                                         `}
                                         style={{ width: header.getSize() }}
@@ -420,54 +440,62 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                             </tr>
                         ))}
                     </thead>
-                    <tbody className="bg-content1">
-                        {/* Spacing Row */}
-                        <tr className="h-1"></tr>
+                    <tbody className="bg-transparent">
                         
-                        {table.getRowModel().rows.map((row, idx) => (
-                            <React.Fragment key={row.id}>
-                                <tr 
-                                    className={`
-                                        group outline-none transition-all duration-200
-                                        border-b border-divider/50 last:border-0
-                                        hover:bg-default-100/60
-                                        data-[selected=true]:bg-primary-50 data-[selected=true]:text-primary-700
-                                        ${row.getIsExpanded() ? 'bg-default-50 border-b-0 shadow-inner' : ''}
-                                    `}
-                                    data-selected={row.getIsSelected()}
-                                >
-                                    {row.getVisibleCells().map(cell => (
-                                        <td 
-                                            key={cell.id} 
-                                            className={`
-                                                p-2 px-3 text-small font-normal align-middle
-                                                whitespace-nowrap overflow-hidden text-ellipsis
-                                                ${cell.column.id === 'select' ? 'text-center' : ''}
-                                                first:rounded-l-lg last:rounded-r-lg
-                                            `}
-                                            style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
-                                        >
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                                {row.getIsExpanded() && (
-                                    <tr className="bg-default-50/50">
-                                        <td colSpan={row.getVisibleCells().length} className="p-0 border-b border-divider rounded-b-lg overflow-hidden">
-                                            <ExpandedRowView 
-                                                rowData={row.original} 
-                                                isDark={isDark} 
-                                                parentSelected={row.getIsSelected()} 
-                                                schema={schema} 
-                                                parentEntityName={entityName}
-                                                onUpdate={onUpdate}
-                                                isEditing={isEditing}
-                                            />
-                                        </td>
+                        {table.getRowModel().rows.map((row, idx) => {
+                            const isSelected = row.getIsSelected();
+                            const rowStyleClass = getRowStyle(idx, isSelected);
+
+                            return (
+                                <React.Fragment key={row.id}>
+                                    <tr 
+                                        className={`
+                                            group outline-none transition-all duration-300
+                                            ${rowStyleClass}
+                                            ${row.getIsExpanded() ? 'shadow-inner' : ''}
+                                        `}
+                                        data-selected={isSelected}
+                                    >
+                                        {row.getVisibleCells().map((cell, cellIdx) => {
+                                            const isFirst = cellIdx === 0;
+                                            const isLast = cellIdx === row.getVisibleCells().length - 1;
+                                            return (
+                                                <td 
+                                                    key={cell.id} 
+                                                    className={`
+                                                        p-3 text-small font-normal align-middle
+                                                        whitespace-nowrap overflow-hidden text-ellipsis
+                                                        ${cell.column.id === 'select' ? 'text-center' : ''}
+                                                        ${isFirst ? 'rounded-l-xl' : ''}
+                                                        ${isLast ? 'rounded-r-xl' : ''}
+                                                    `}
+                                                    style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
+                                                >
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </td>
+                                            );
+                                        })}
                                     </tr>
-                                )}
-                            </React.Fragment>
-                        ))}
+                                    {row.getIsExpanded() && (
+                                        <tr className="bg-transparent">
+                                            <td colSpan={row.getVisibleCells().length} className="p-0 rounded-b-xl overflow-hidden shadow-sm">
+                                                <div className="border-l-4 border-default-300 ml-4 rounded-b-xl overflow-hidden">
+                                                    <ExpandedRowView 
+                                                        rowData={row.original} 
+                                                        isDark={isDark} 
+                                                        parentSelected={row.getIsSelected()} 
+                                                        schema={schema} 
+                                                        parentEntityName={entityName}
+                                                        onUpdate={onUpdate}
+                                                        isEditing={isEditing}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
                     </tbody>
                 </table>
                 
