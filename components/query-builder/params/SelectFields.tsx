@@ -1,3 +1,4 @@
+
 import React, { useMemo, Key } from 'react';
 import { Input } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
@@ -73,13 +74,13 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14 border-2 border-default-200 data-[hover=true]:border-default-400",
+        trigger: "h-14 min-h-14",
         label: "text-[10px] font-medium text-default-500",
         value: "text-small"
     };
 
     if (!currentSchema) {
-        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
+        return <Input label="字段 ($select)" placeholder="需先选择实体" isDisabled variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />;
     }
 
     return (
@@ -89,7 +90,7 @@ export const SelectFields: React.FC<SelectFieldsProps> = ({
             selectionMode="multiple"
             selectedKeys={currentSelectKeys}
             onSelectionChange={handleSelectChange}
-            variant="bordered"
+            variant="flat"
             classNames={commonClassNames}
             items={selectItems}
             renderValue={(items) => (

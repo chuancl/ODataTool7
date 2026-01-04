@@ -217,7 +217,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                 <Select 
                     label="Target Entity" 
                     size="sm" 
-                    variant="bordered" 
+                    variant="flat" 
                     className="max-w-[240px]"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onChange={(e) => setSelectedEntity(e.target.value)}
@@ -230,7 +230,7 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                     value={count} 
                     onValueChange={setCount} 
                     className="max-w-[100px]" 
-                    variant="bordered"
+                    variant="flat"
                     size="sm"
                 />
                 <Button color="primary" onPress={generateData} startContent={<Sparkles size={16}/>} className="font-semibold">
@@ -283,25 +283,25 @@ const MockDataGenerator: React.FC<Props> = ({ url, version, schema, isDark = tru
                                     {conf.strategy === 'custom.increment' && (
                                         <div className="grid grid-cols-2 gap-2 mt-1 bg-default-50 p-2 rounded border border-divider">
                                             <Input 
-                                                label="Start" size="sm" type="number" variant="bordered"
+                                                label="Start" size="sm" type="number" variant="flat"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.start)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'start', Number(v))}
                                             />
                                             <Input 
-                                                label="Step" size="sm" type="number" variant="bordered"
+                                                label="Step" size="sm" type="number" variant="flat"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={String(conf.incrementConfig?.step)}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'step', Number(v))}
                                             />
                                             <Input 
-                                                label="Prefix" size="sm" variant="bordered"
+                                                label="Prefix" size="sm" variant="flat"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.prefix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'prefix', v)}
                                             />
                                             <Input 
-                                                label="Suffix" size="sm" variant="bordered"
+                                                label="Suffix" size="sm" variant="flat"
                                                 classNames={{ input: "text-[10px]", label: "text-[9px]" }}
                                                 value={conf.incrementConfig?.suffix}
                                                 onValueChange={(v) => updateIncrementConfig(fp.path, 'suffix', v)}

@@ -1,3 +1,4 @@
+
 import React, { useMemo, Key } from 'react';
 import { Input } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
@@ -70,7 +71,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14 border-2 border-default-200 data-[hover=true]:border-default-400",
+        trigger: "h-14 min-h-14",
         label: "text-[10px] font-medium text-default-500",
         value: "text-small"
     };
@@ -78,8 +79,8 @@ export const SortFields: React.FC<SortFieldsProps> = ({
     if (!currentSchema) {
         return (
             <>
-                <Input isDisabled label="升序" placeholder="需先选择实体" variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
-                <Input isDisabled label="降序" placeholder="需先选择实体" variant="bordered" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="升序" placeholder="需先选择实体" variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
+                <Input isDisabled label="降序" placeholder="需先选择实体" variant="flat" classNames={{ inputWrapper: commonClassNames.trigger, label: commonClassNames.label }} />
             </>
         );
     }
@@ -94,7 +95,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentAscKeys}
                 onSelectionChange={handleAscChange}
                 disabledKeys={Array.from(currentDescKeys)} 
-                variant="bordered"
+                variant="flat"
                 classNames={commonClassNames}
                 items={sortOptions}
             >
@@ -119,7 +120,7 @@ export const SortFields: React.FC<SortFieldsProps> = ({
                 selectedKeys={currentDescKeys}
                 onSelectionChange={handleDescChange}
                 disabledKeys={Array.from(currentAscKeys)} 
-                variant="bordered"
+                variant="flat"
                 classNames={commonClassNames}
                 items={sortOptions}
             >

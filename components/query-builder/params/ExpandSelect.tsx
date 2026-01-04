@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, Key } from 'react';
 import { Select, SelectItem } from "@nextui-org/select";
 import { ChevronRight, ChevronDown } from 'lucide-react';
@@ -122,13 +123,13 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
     };
 
     const commonClassNames = {
-        trigger: "h-14 min-h-14 border-2 border-default-200 data-[hover=true]:border-default-400",
+        trigger: "h-14 min-h-14",
         label: "text-[10px] font-medium text-default-500",
         value: "text-small"
     };
 
     if (!currentSchema) {
-        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant="bordered" classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
+        return <Select isDisabled label="展开 ($expand)" placeholder="需先选择实体" variant="flat" classNames={commonClassNames}><SelectItem key="placeholder">Placeholder</SelectItem></Select>;
     }
 
     return (
@@ -138,7 +139,7 @@ export const ExpandSelect: React.FC<ExpandSelectProps> = ({
             selectionMode="multiple"
             selectedKeys={currentExpandKeys}
             onSelectionChange={handleExpandChange}
-            variant="bordered"
+            variant="flat"
             classNames={commonClassNames}
             items={expandItems}
         >

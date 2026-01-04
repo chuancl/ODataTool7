@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, Key } from 'react';
 import { Select, SelectItem } from "@nextui-org/select";
 import { EntityType, ParsedSchema } from '@/utils/odata-helper';
@@ -122,14 +123,14 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                     placeholder="选择实体"
                     selectedKeys={selectedEntity ? [selectedEntity] : []}
                     onSelectionChange={onEntityChange}
-                    variant="bordered"
+                    variant="flat"
                     // 移除 size="sm" 以使用默认高度 (通常也是 h-14 左右，与我们的 Toolbar 对齐)
                     // 或者显式设置高度 class
                     className="w-full"
                     classNames={{
-                        trigger: "h-14 min-h-14 border-2 border-default-200 data-[hover=true]:border-default-400", // Force height to match toolbar
+                        trigger: "h-14 min-h-14", // Force height to match toolbar
                         label: "text-[10px] font-medium text-default-500",
-                        value: "text-small"
+                        value: "text-small font-bold"
                     }}
                     items={entitySets.map(e => ({ key: e, label: e }))}
                 >
@@ -139,7 +140,6 @@ export const ParamsForm: React.FC<ParamsFormProps> = ({
                 {/* 2. 组合工具栏：过滤 + 分页 + 计数 */}
                 {/* 
                     这个组件内部高度设置为 h-14 (56px)，与上面的 Select 对齐。
-                    边框样式也模拟了 Select variant="bordered"。
                 */}
                 <PaginationControls 
                     filter={filter}

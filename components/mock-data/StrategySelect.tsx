@@ -122,7 +122,7 @@ export const StrategySelect: React.FC<StrategySelectProps> = ({ value, onChange,
         <Select 
             aria-label={label || "Select Strategy"}
             size="sm" 
-            variant="faded" 
+            variant="flat" 
             selectedKeys={selectedKeys}
             onSelectionChange={(keys) => {
                 const k = Array.from(keys)[0] as string;

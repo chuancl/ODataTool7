@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Switch } from "@nextui-org/switch";
 import { cn } from "@nextui-org/theme";
@@ -22,7 +23,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
     count, setCount
 }) => {
     return (
-        <div className="flex items-center border-2 border-default-200 rounded-xl px-3 bg-content1 hover:border-default-400 transition-colors h-14 w-full overflow-hidden relative shadow-sm">
+        <div className="flex items-center rounded-xl px-3 bg-default-100 hover:bg-default-200 transition-colors h-14 w-full overflow-hidden relative shadow-sm">
             
             {/* 1. Filter Section (Flex Grow + min-w-0 to prevent overflow) */}
             <div 
@@ -54,7 +55,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                             </div>
                         </div>
                     ) : (
-                        <span className="text-default-300 text-xs italic group-hover:text-default-400 transition-colors truncate">
+                        <span className="text-default-400 text-xs italic group-hover:text-default-500 transition-colors truncate">
                             点击构建过滤器...
                         </span>
                     )}
@@ -69,7 +70,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 <label htmlFor="input-top" className="text-[10px] text-default-500 font-medium cursor-text w-full text-center">Top</label>
                 <input 
                     id="input-top"
-                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-300 focus:text-primary transition-colors"
+                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-400 focus:text-primary transition-colors"
                     value={top || ''} 
                     onChange={(e) => setTop(e.target.value)}
                     placeholder="20"
@@ -84,7 +85,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
                 <label htmlFor="input-skip" className="text-[10px] text-default-500 font-medium cursor-text w-full text-center">Skip</label>
                 <input 
                     id="input-skip"
-                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-300 focus:text-primary transition-colors"
+                    className="w-full bg-transparent text-center font-mono text-sm outline-none h-6 text-default-700 placeholder:text-default-400 focus:text-primary transition-colors"
                     value={skip || ''}
                     onChange={(e) => setSkip(e.target.value)}
                     placeholder="0"
