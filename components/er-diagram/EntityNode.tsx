@@ -1,6 +1,6 @@
 
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { Handle, Position, NodeProps, useUpdateNodeInternals, useReactFlow } from 'reactflow';
+import { Handle, useUpdateNodeInternals, useReactFlow, type NodeProps } from 'reactflow';
 import { Button } from "@nextui-org/button";
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/popover";
 import { ScrollShadow } from "@nextui-org/scroll-shadow";
@@ -147,7 +147,7 @@ export const EntityNode = React.memo(({ id, data, selected }: NodeProps) => {
         style={containerDynamicStyle}
       >
         {dynamicHandles.map((handle) => {
-          const isVertical = handle.position === Position.Top || handle.position === Position.Bottom;
+          const isVertical = handle.position === 'top' || handle.position === 'bottom';
           const style: React.CSSProperties = {
             position: 'absolute',
             [isVertical ? 'left' : 'top']: `${handle.offset}%`,
@@ -155,10 +155,10 @@ export const EntityNode = React.memo(({ id, data, selected }: NodeProps) => {
             width: '12px', height: '12px',
             zIndex: 10,
           };
-          if (handle.position === Position.Top) style.top = '-6px';
-          if (handle.position === Position.Bottom) style.bottom = '-6px';
-          if (handle.position === Position.Left) style.left = '-6px';
-          if (handle.position === Position.Right) style.right = '-6px';
+          if (handle.position === 'top') style.top = '-6px';
+          if (handle.position === 'bottom') style.bottom = '-6px';
+          if (handle.position === 'left') style.left = '-6px';
+          if (handle.position === 'right') style.right = '-6px';
           return <Handle key={handle.id} id={handle.id} type={handle.type} position={handle.position} style={style} />;
         })}
 

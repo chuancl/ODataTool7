@@ -1,10 +1,11 @@
-import { Node, Edge, Position } from 'reactflow';
+
+import type { Node, Edge } from 'reactflow';
 
 // --- 动态 Handle 配置接口 ---
 export interface DynamicHandleConfig {
   id: string;
   type: 'source' | 'target';
-  position: Position;
+  position: 'top' | 'bottom' | 'left' | 'right';
   offset: number; // 0-100%
   // 辅助排序坐标 (内部使用，用于计算无交叉布局)
   connectedX?: number; 
@@ -41,24 +42,24 @@ export const calculateDynamicLayout = (nodes: Node[], edges: Edge[]) => {
     const dy = ty - sy;
 
     // Determine Handle Position based on relative direction
-    let sourcePos = Position.Right;
-    let targetPos = Position.Left;
+    let sourcePos: 'right' | 'left' | 'top' | 'bottom' = 'right';
+    let targetPos: 'left' | 'right' | 'top' | 'bottom' = 'left';
 
     if (Math.abs(dx) > Math.abs(dy)) {
         if (dx > 0) {
-            sourcePos = Position.Right;
-            targetPos = Position.Left;
+            sourcePos = 'right';
+            targetPos = 'left';
         } else {
-            sourcePos = Position.Left;
-            targetPos = Position.Right;
+            sourcePos = 'left';
+            targetPos = 'right';
         }
     } else {
         if (dy > 0) {
-            sourcePos = Position.Bottom;
-            targetPos = Position.Top;
+            sourcePos = 'bottom';
+            targetPos = 'top';
         } else {
-            sourcePos = Position.Top;
-            targetPos = Position.Bottom;
+            sourcePos = 'top';
+            targetPos = 'bottom';
         }
     }
 
@@ -92,7 +93,7 @@ export const calculateDynamicLayout = (nodes: Node[], edges: Edge[]) => {
   nextNodes.forEach(node => {
      const handles = node.data.dynamicHandles as DynamicHandleConfig[];
      const groups: Record<string, DynamicHandleConfig[]> = {
-         [Position.Top]: [], [Position.Bottom]: [], [Position.Left]: [], [Position.Right]: []
+         'top': [], 'bottom': [], 'left': [], 'right': []
      };
      handles.forEach(h => groups[h.position]?.push(h));
      
@@ -103,7 +104,7 @@ export const calculateDynamicLayout = (nodes: Node[], edges: Edge[]) => {
              // of the nodes they connect to.
              group.sort((a, b) => {
                  // For Left/Right handles, sort by the Y coordinate of the connected node (Top to Bottom)
-                 if (pos === Position.Left || pos === Position.Right) {
+                 if (pos === 'left' || pos === 'right') {
                      return (a.connectedY || 0) - (b.connectedY || 0);
                  } 
                  // For Top/Bottom handles, sort by the X coordinate of the connected node (Left to Right)

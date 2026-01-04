@@ -93,7 +93,7 @@ const DashboardContent: React.FC = () => {
   const handleUrlChange = (val: string) => setUrl(val);
 
   return (
-      <div className={`text-foreground h-screen w-screen flex flex-col overflow-hidden font-sans antialiased ${isDark ? 'bg-background' : 'bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50'}`}>
+      <div className={`text-foreground h-screen w-screen flex flex-col overflow-hidden font-sans antialiased ${isDark ? 'bg-background' : 'bg-[#D5F5E3]'}`}>
         
         {/* 顶部导航栏 */}
         <nav className={`h-16 border-b border-divider px-6 flex items-center justify-between shrink-0 z-50 shadow-sm gap-4 ${isDark ? 'bg-content1' : 'bg-white/60 backdrop-blur-md'}`}>

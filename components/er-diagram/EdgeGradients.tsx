@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import { Edge, Node } from 'reactflow';
+import type { Edge, Node } from 'reactflow';
 
 interface EdgeGradientsProps {
     edges: Edge[];

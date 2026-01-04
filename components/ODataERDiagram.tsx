@@ -4,8 +4,7 @@ import ReactFlow, {
   Controls, 
   Background, 
   ReactFlowProvider,
-  useReactFlow, 
-  BackgroundVariant 
+  useReactFlow
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ParsedSchema } from '@/utils/odata-helper';
@@ -109,7 +108,7 @@ const ODataERDiagramContent: React.FC<Props> = ({ url, schema, isLoading, xmlCon
   }, [generateDiagram, fitView, resetHighlight]);
 
   return (
-    <div className={`w-full h-full relative ${isDark ? 'bg-[#21252b]' : 'bg-[#FFF8E1]'}`}>
+    <div className={`w-full h-full relative ${isDark ? 'bg-[#21252b]' : 'bg-[#D5F5E3]'}`}>
       {(isLoading || isProcessingLayout) && (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm gap-4">
           <Spinner size="lg" color="primary" />
@@ -168,8 +167,8 @@ const ODataERDiagramContent: React.FC<Props> = ({ url, schema, isLoading, xmlCon
                     color={isDark ? "#3e4451" : "#d6d3d1"} 
                     gap={20} 
                     size={isDark ? 1 : 2} 
-                    variant={isDark ? undefined : BackgroundVariant.Dots}
-                    style={isDark ? {} : { backgroundColor: '#FFF8E1' }}
+                    variant={isDark ? undefined : "dots"}
+                    style={isDark ? {} : { backgroundColor: '#D5F5E3' }}
                 />
             </ReactFlow>
         </DiagramContext.Provider>
