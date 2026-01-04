@@ -322,24 +322,25 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
         unregister: (id) => { registryRef.current.delete(id); }
     }), []);
 
-    // --- Color Logic for HeroUI Style ---
+    // --- Vibrant Color Logic for HeroUI/DeepSeek Style ---
+    // 强制使用鲜艳的背景色循环，完全模仿参考图
     const getRowStyle = (index: number, isSelected: boolean) => {
-        // HeroUI / Reference Image Color Palette
-        // 0: Green, 1: Blue, 2: Purple, 3: Cyan
+        // 0: Green, 1: Blue, 2: Purple, 3: Cyan (循环)
         const colors = [
-            'bg-success-50/60 dark:bg-success-900/20 hover:bg-success-100/80',
-            'bg-primary-50/60 dark:bg-primary-900/20 hover:bg-primary-100/80',
-            'bg-secondary-50/60 dark:bg-secondary-900/20 hover:bg-secondary-100/80',
-            'bg-cyan-50/60 dark:bg-cyan-900/20 hover:bg-cyan-100/80',
+            // Light Mode / Dark Mode
+            'bg-[#d1fae5]/80 dark:bg-[#064e3b]/30 hover:bg-[#a7f3d0]', // Green
+            'bg-[#dbeafe]/80 dark:bg-[#1e3a8a]/30 hover:bg-[#bfdbfe]', // Blue
+            'bg-[#f3e8ff]/80 dark:bg-[#581c87]/30 hover:bg-[#e9d5ff]', // Purple
+            'bg-[#cffafe]/80 dark:bg-[#164e63]/30 hover:bg-[#a5f3fc]', // Cyan
         ];
 
-        // 选中状态：使用醒目的橙色/Warning，类似参考图
+        // 选中状态：使用醒目的橙色渐变，模仿 "Dantiedls" 行
         if (isSelected) {
-            return "bg-gradient-to-r from-warning-100 to-warning-50 dark:from-warning-900/40 dark:to-warning-900/20 hover:from-warning-200 hover:to-warning-100 shadow-md transform scale-[1.002] z-10 border-l-4 border-warning-500";
+            return "bg-gradient-to-r from-[#fdba74] to-[#fed7aa] dark:from-[#7c2d12] dark:to-[#9a3412] text-[#431407] dark:text-[#ffedd5] shadow-md z-10 scale-[1.01] font-semibold border-l-4 border-[#ea580c]";
         }
 
         // 默认循环颜色
-        return `${colors[index % colors.length]} border-l-4 border-transparent`;
+        return `${colors[index % colors.length]} text-default-700 dark:text-default-400 border-l-4 border-transparent`;
     };
 
     const tableContent = (
@@ -358,22 +359,21 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                 hideUpdateButton={hideUpdateButton}
             />
 
-            <div className="flex-1 w-full overflow-auto relative rounded-lg border border-divider scrollbar-thin scrollbar-thumb-default-300" ref={tableContainerRef}>
+            <div className="flex-1 w-full overflow-auto relative rounded-xl border border-divider scrollbar-thin scrollbar-thumb-default-300 bg-content2/20" ref={tableContainerRef}>
                 <table 
-                    className="min-w-full table-fixed border-separate border-spacing-y-2" // Important: border-separate for card effect
+                    className="min-w-full table-fixed border-separate border-spacing-y-3 px-2" // 增加行间距，实现卡片悬浮感
                     style={{ width: Math.max(table.getTotalSize(), containerWidth - 24) }}
                 >
-                    <thead className="sticky top-0 z-20 shadow-sm [&>tr]:first:rounded-lg">
+                    <thead className="sticky top-0 z-20 shadow-sm [&>tr]:first:rounded-xl">
                         {table.getHeaderGroups().map(headerGroup => (
                             <tr key={headerGroup.id} className="h-10">
                                 {headerGroup.headers.map((header, index) => (
                                     <th 
                                         key={header.id} 
                                         className={`
-                                            bg-default-100 text-default-500 text-tiny font-bold uppercase px-3 py-2 text-left
-                                            border-b border-divider/50
-                                            ${index === 0 ? 'rounded-l-lg' : ''}
-                                            ${index === headerGroup.headers.length - 1 ? 'rounded-r-lg' : ''}
+                                            bg-default-100/90 backdrop-blur-md text-default-500 text-tiny font-bold uppercase px-4 py-3 text-left
+                                            ${index === 0 ? 'rounded-l-xl' : ''}
+                                            ${index === headerGroup.headers.length - 1 ? 'rounded-r-xl' : ''}
                                             relative group select-none whitespace-nowrap overflow-hidden
                                         `}
                                         style={{ width: header.getSize() }}
@@ -406,7 +406,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                         <div className="flex items-center gap-1 w-full justify-between">
                                             {/* Grip for Draggable columns */}
                                             {!['expander', 'select', 'index'].includes(header.id) && (
-                                                <GripVertical size={12} className="text-default-300 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity shrink-0 absolute left-0.5" />
+                                                <GripVertical size={12} className="text-default-300 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity shrink-0 absolute left-1" />
                                             )}
                                             
                                             {/* Header Content */}
@@ -450,9 +450,9 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                 <React.Fragment key={row.id}>
                                     <tr 
                                         className={`
-                                            group outline-none transition-all duration-300
+                                            group outline-none transition-all duration-200 ease-in-out
                                             ${rowStyleClass}
-                                            ${row.getIsExpanded() ? 'shadow-inner' : ''}
+                                            ${row.getIsExpanded() ? 'shadow-inner rounded-b-none mb-0' : 'shadow-sm hover:shadow-md'}
                                         `}
                                         data-selected={isSelected}
                                     >
@@ -463,11 +463,12 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                                 <td 
                                                     key={cell.id} 
                                                     className={`
-                                                        p-3 text-small font-normal align-middle
+                                                        p-3 text-small align-middle
                                                         whitespace-nowrap overflow-hidden text-ellipsis
                                                         ${cell.column.id === 'select' ? 'text-center' : ''}
                                                         ${isFirst ? 'rounded-l-xl' : ''}
                                                         ${isLast ? 'rounded-r-xl' : ''}
+                                                        ${row.getIsExpanded() ? 'rounded-b-none' : ''}
                                                     `}
                                                     style={{ width: cell.column.getSize(), maxWidth: cell.column.getSize() }}
                                                 >
@@ -479,7 +480,7 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
                                     {row.getIsExpanded() && (
                                         <tr className="bg-transparent">
                                             <td colSpan={row.getVisibleCells().length} className="p-0 rounded-b-xl overflow-hidden shadow-sm">
-                                                <div className="border-l-4 border-default-300 ml-4 rounded-b-xl overflow-hidden">
+                                                <div className={`ml-4 rounded-b-xl overflow-hidden border-l-4 ${isSelected ? 'border-[#ea580c] bg-warning-50/50' : 'border-default-300 bg-content2/50'}`}>
                                                     <ExpandedRowView 
                                                         rowData={row.original} 
                                                         isDark={isDark} 
