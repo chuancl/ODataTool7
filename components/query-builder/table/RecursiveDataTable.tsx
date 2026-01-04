@@ -327,20 +327,21 @@ export const RecursiveDataTable: React.FC<RecursiveDataTableProps> = ({
     const getRowStyle = (index: number, isSelected: boolean) => {
         // 0: Green, 1: Blue, 2: Purple, 3: Cyan (循环)
         const colors = [
-            // Light Mode / Dark Mode
-            'bg-[#d1fae5]/80 dark:bg-[#064e3b]/30 hover:bg-[#a7f3d0]', // Green
-            'bg-[#dbeafe]/80 dark:bg-[#1e3a8a]/30 hover:bg-[#bfdbfe]', // Blue
-            'bg-[#f3e8ff]/80 dark:bg-[#581c87]/30 hover:bg-[#e9d5ff]', // Purple
-            'bg-[#cffafe]/80 dark:bg-[#164e63]/30 hover:bg-[#a5f3fc]', // Cyan
+            // Light Mode: Using 200/300 scale for deeper color
+            // Dark Mode: Using 800/900 scale with opacity
+            'bg-emerald-200/80 dark:bg-emerald-900/40 hover:bg-emerald-300/80', // Green
+            'bg-blue-200/80 dark:bg-blue-900/40 hover:bg-blue-300/80',       // Blue
+            'bg-purple-200/80 dark:bg-purple-900/40 hover:bg-purple-300/80', // Purple
+            'bg-cyan-200/80 dark:bg-cyan-900/40 hover:bg-cyan-300/80',       // Cyan
         ];
 
-        // 选中状态：使用醒目的橙色渐变，模仿 "Dantiedls" 行
+        // 选中状态：使用更醒目的橙色渐变，颜色更深
         if (isSelected) {
-            return "bg-gradient-to-r from-[#fdba74] to-[#fed7aa] dark:from-[#7c2d12] dark:to-[#9a3412] text-[#431407] dark:text-[#ffedd5] shadow-md z-10 scale-[1.01] font-semibold border-l-4 border-[#ea580c]";
+            return "bg-gradient-to-r from-orange-300 to-orange-200 dark:from-orange-800 dark:to-orange-700 text-orange-900 dark:text-orange-100 shadow-md z-10 scale-[1.01] font-semibold border-l-4 border-orange-600";
         }
 
         // 默认循环颜色
-        return `${colors[index % colors.length]} text-default-700 dark:text-default-400 border-l-4 border-transparent`;
+        return `${colors[index % colors.length]} text-slate-700 dark:text-slate-300 border-l-4 border-transparent`;
     };
 
     const tableContent = (
